@@ -1,0 +1,3169 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vocalizen pour Parisian Cutz - L'Agent AI Vocal qui Transforme votre Salon</title>
+    
+    <!-- Leaflet CSS pour la carte -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" integrity="sha512-h9FcoyWjHcOcmEVkxOfTLnmZFWIH0iZhZT1H2TbOq55xssQGEJHEaIm+PgoUaZbRvQTNTluNOEfb1ZRy6D3BOw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            /* Palette Premium */
+            --primary-purple: #7B3FF2;
+            --primary-dark: #5F2DB8;
+            --primary-light: #9B6FFF;
+            --accent-yellow: #FFD700;
+            --accent-bright: #FFF59D;
+            --success-green: #00D084;
+            --danger-red: #FF3366;
+            --warning-amber: #FFA726;
+            --info-blue: #00B4D8;
+            --dark-bg: #0C0E1B;
+            --dark-section: #161829;
+            --gray-light: #F7F8FC;
+            --white: #FFFFFF;
+            --gradient-hero: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-cta: linear-gradient(45deg, #FFD700 0%, #FFA000 100%);
+            --gradient-danger: linear-gradient(135deg, #FF3366 0%, #FF6B35 100%);
+            --gradient-success: linear-gradient(135deg, #00D084 0%, #00BFA5 100%);
+            --gradient-info: linear-gradient(135deg, #00B4D8 0%, #0077B6 100%);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Inter', sans-serif;
+            background: var(--dark-bg);
+            color: var(--white);
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+            line-height: 1.6;
+        }
+
+        /* Typography */
+        .highlight-yellow {
+            color: var(--accent-yellow);
+            font-weight: 600;
+        }
+
+        .highlight-green {
+            color: var(--success-green);
+            font-weight: 600;
+        }
+
+        .highlight-purple {
+            color: var(--primary-light);
+            font-weight: 600;
+        }
+
+        .highlight-red {
+            color: var(--danger-red);
+            font-weight: 600;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% { 
+                transform: scale(1);
+                box-shadow: 0 4px 10px rgba(255, 215, 0, 0.3);
+            }
+            50% { 
+                transform: scale(1.05);
+                box-shadow: 0 4px 20px rgba(255, 215, 0, 0.6);
+            }
+        }
+
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.5); }
+            50% { box-shadow: 0 0 40px rgba(255, 215, 0, 0.8); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        @keyframes gradient-shift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Navigation Tabs */
+        .nav-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(12, 14, 27, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            border-bottom: 1px solid rgba(123, 63, 242, 0.3);
+        }
+
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem 2rem;
+            gap: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .nav-tab {
+            color: var(--gray-light);
+            text-decoration: none;
+            padding: 0.5rem 1.5rem;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            position: relative;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+
+        .nav-tab:hover {
+            color: var(--accent-yellow);
+            background: rgba(123, 63, 242, 0.2);
+        }
+
+        .nav-tab.active {
+            color: var(--dark-bg);
+            background: var(--gradient-cta);
+            font-weight: bold;
+        }
+
+        /* Mobile Menu Hamburger */
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            padding: 1rem;
+        }
+
+        .hamburger span {
+            width: 25px;
+            height: 3px;
+            background: var(--accent-yellow);
+            margin: 3px 0;
+            transition: 0.3s;
+        }
+
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(-45deg) translate(-5px, 6px);
+        }
+
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(45deg) translate(-5px, -6px);
+        }
+
+        @media (max-width: 768px) {
+            .hamburger {
+                display: flex;
+            }
+
+            .nav-tabs {
+                position: fixed;
+                top: 60px;
+                left: -100%;
+                width: 100%;
+                height: calc(100vh - 60px);
+                background: rgba(12, 14, 27, 0.98);
+                flex-direction: column;
+                justify-content: flex-start;
+                padding-top: 2rem;
+                transition: left 0.3s ease;
+            }
+
+            .nav-tabs.active {
+                left: 0;
+            }
+
+            .nav-tab {
+                width: 80%;
+                text-align: center;
+                padding: 1rem;
+                font-size: 1.1rem;
+            }
+
+            .nav-container {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 0 1rem;
+            }
+        }
+
+        .tab-content {
+            display: none;
+            padding-top: 80px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            background: var(--gradient-hero);
+            background-size: 400% 400%;
+            animation: gradient-shift 15s ease infinite;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(255, 215, 0, 0.5);
+            border-radius: 50%;
+            animation: float 6s infinite ease-in-out;
+        }
+
+        .hero-content {
+            text-align: center;
+            z-index: 2;
+            padding: 2rem;
+            max-width: 1200px;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            animation: fadeInUp 0.8s ease;
+        }
+
+        .hero h1 {
+            font-size: clamp(2rem, 5vw, 4rem);
+            font-weight: 900;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, var(--white), var(--accent-yellow));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: fadeInUp 1s ease 0.2s both;
+        }
+
+        .hero .subtitle {
+            font-size: clamp(1.1rem, 2.5vw, 1.8rem);
+            margin-bottom: 2rem;
+            animation: fadeInUp 1s ease 0.4s both;
+            color: var(--gray-light);
+        }
+
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+            animation: fadeInUp 1s ease 0.6s both;
+        }
+
+        .hero-stat {
+            text-align: center;
+        }
+
+        .hero-stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--accent-yellow);
+        }
+
+        .hero-stat-label {
+            font-size: 0.9rem;
+            color: var(--gray-light);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Enhanced Map Section */
+        #enhanced-map {
+            height: 700px;
+            border-radius: 20px;
+            border: 3px solid var(--primary-purple);
+            box-shadow: 0 20px 60px rgba(123, 63, 242, 0.3);
+            background: #f5f5f5;
+            position: relative;
+        }
+
+        .map-legend-custom {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px;
+            border-radius: 10px;
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            max-width: 200px;
+        }
+
+        .legend-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin: 8px 0;
+            color: #555;
+            font-size: 12px;
+        }
+
+        .legend-icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 1.2rem 3rem;
+            background: var(--gradient-cta);
+            color: var(--dark-bg);
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            animation: glow 2s infinite, fadeInUp 1s ease 0.8s both;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .cta-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 40px rgba(255, 215, 0, 0.5);
+        }
+
+        /* Story Section */
+        .story-section {
+            padding: 5rem 2rem;
+            background: var(--dark-section);
+            position: relative;
+        }
+
+        .story-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .story-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .story-title {
+            font-size: clamp(2rem, 4vw, 3.5rem);
+            margin-bottom: 1rem;
+            background: var(--gradient-cta);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .story-timeline {
+            position: relative;
+            padding: 2rem 0;
+        }
+
+        .timeline-item {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 3rem;
+            align-items: center;
+        }
+
+        .timeline-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--gradient-hero);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            flex-shrink: 0;
+        }
+
+        .timeline-content {
+            flex: 1;
+            background: rgba(123, 63, 242, 0.1);
+            padding: 2rem;
+            border-radius: 20px;
+            border-left: 4px solid var(--primary-purple);
+        }
+
+        .timeline-content h3 {
+            color: var(--accent-yellow);
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        /* Stats Comparison */
+        .stats-comparison {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, rgba(123, 63, 242, 0.1), rgba(255, 215, 0, 0.05));
+            border: 1px solid var(--primary-purple);
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(123, 63, 242, 0.3);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 1.1rem;
+            color: var(--gray-light);
+        }
+
+        .stat-sublabel {
+            font-size: 0.9rem;
+            color: var(--primary-light);
+            margin-top: 0.5rem;
+        }
+
+        /* Trends Section */
+        .trends-section {
+            padding: 5rem 2rem;
+            background: var(--dark-bg);
+            position: relative;
+        }
+
+        .trends-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .trends-title {
+            font-size: clamp(2rem, 4vw, 3.5rem);
+            margin-bottom: 1rem;
+            background: var(--gradient-info);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .trends-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .trend-card {
+            background: linear-gradient(135deg, rgba(0, 180, 216, 0.1), rgba(123, 63, 242, 0.1));
+            border: 1px solid var(--info-blue);
+            border-radius: 20px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .trend-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--gradient-info);
+        }
+
+        .trend-card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 180, 216, 0.3);
+        }
+
+        .trend-number {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 40px;
+            height: 40px;
+            background: var(--gradient-info);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .trend-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .trend-title {
+            color: var(--info-blue);
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+        }
+
+        .trend-description {
+            color: var(--gray-light);
+            line-height: 1.6;
+        }
+
+        .trend-tag {
+            display: inline-block;
+            background: rgba(255, 215, 0, 0.1);
+            color: var(--accent-yellow);
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+        }
+
+        /* Position Section */
+        .position-section {
+            padding: 5rem 2rem;
+            background: var(--dark-section);
+        }
+
+        .position-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .position-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: center;
+        }
+
+        .position-text h2 {
+            font-size: clamp(1.8rem, 3vw, 2.5rem);
+            margin-bottom: 2rem;
+            color: var(--primary-light);
+        }
+
+        .position-points {
+            list-style: none;
+        }
+
+        .position-points li {
+            margin: 1.5rem 0;
+            padding-left: 2rem;
+            position: relative;
+            font-size: 1.1rem;
+        }
+
+        .position-points li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--accent-yellow);
+            font-size: 1.5rem;
+        }
+
+        /* Map Section */
+        .map-section {
+            padding: 5rem 2rem;
+            background: var(--dark-bg);
+        }
+
+        .map-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .map-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .map-header h2 {
+            font-size: clamp(2rem, 4vw, 3rem);
+            color: var(--primary-light);
+            margin-bottom: 1rem;
+        }
+
+        .map-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        #map {
+            height: 500px;
+            border-radius: 20px;
+            border: 2px solid var(--primary-purple);
+        }
+
+        .map-insights {
+            background: linear-gradient(135deg, rgba(123, 63, 242, 0.1), rgba(255, 215, 0, 0.05));
+            border-radius: 20px;
+            padding: 2rem;
+        }
+
+        .insight-item {
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+        }
+
+        .insight-item:last-child {
+            border-bottom: none;
+        }
+
+        .insight-title {
+            color: var(--accent-yellow);
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            font-weight: bold;
+        }
+
+        /* Features Grid */
+        .features-section {
+            padding: 5rem 2rem;
+            background: var(--dark-section);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, rgba(123, 63, 242, 0.1), rgba(255, 215, 0, 0.1));
+            border: 2px solid var(--primary-purple);
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(123, 63, 242, 0.4);
+            border-color: var(--accent-yellow);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: var(--accent-yellow);
+        }
+
+        .feature-title {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary-light);
+        }
+
+        .feature-description {
+            color: var(--gray-light);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .feature-benefit {
+            color: var(--success-green);
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        /* Solution Section */
+        .solution-section {
+            padding: 5rem 2rem;
+            background: var(--dark-bg);
+        }
+
+        .solution-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .solution-title {
+            font-size: clamp(2rem, 4vw, 3.5rem);
+            margin-bottom: 1rem;
+            background: var(--gradient-cta);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .solution-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .solution-card {
+            background: rgba(0, 208, 132, 0.1);
+            border: 2px solid var(--success-green);
+            border-radius: 20px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .solution-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 20px 40px rgba(0, 208, 132, 0.3);
+        }
+
+        .solution-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .solution-card h3 {
+            color: var(--success-green);
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        /* Calculator Section */
+        .calculator-section {
+            padding: 5rem 2rem;
+            background: var(--dark-section);
+        }
+
+        .calculator {
+            max-width: 800px;
+            margin: 0 auto;
+            background: linear-gradient(135deg, rgba(123, 63, 242, 0.2), rgba(255, 215, 0, 0.1));
+            border-radius: 30px;
+            padding: 3rem;
+            border: 2px solid var(--primary-purple);
+        }
+
+        .calculator h2 {
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 2.5rem;
+            background: var(--gradient-cta);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .calculator-disclaimer {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: var(--gray-light);
+            font-style: italic;
+        }
+
+        .slider-group {
+            margin: 2rem 0;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .slider-value {
+            color: var(--accent-yellow);
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 10px;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.1);
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: var(--accent-yellow);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+
+        .results {
+            margin-top: 3rem;
+            padding: 2rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 20px;
+            text-align: center;
+        }
+
+        .result-item {
+            margin: 1rem 0;
+            font-size: 1.3rem;
+        }
+
+        .loss-amount {
+            color: var(--danger-red);
+            font-size: 2rem;
+            font-weight: bold;
+            animation: pulse 2s infinite;
+        }
+
+        .gain-amount {
+            color: var(--success-green);
+            font-size: 2rem;
+            font-weight: bold;
+            animation: pulse 2s infinite;
+        }
+
+        .roi-amount {
+            color: var(--accent-yellow);
+            font-size: 2.5rem;
+            font-weight: bold;
+            animation: glow 2s infinite;
+        }
+
+        /* Pricing Section */
+        .pricing-section {
+            padding: 5rem 2rem;
+            background: var(--dark-bg);
+        }
+
+        .pricing-card {
+            max-width: 500px;
+            margin: 0 auto;
+            background: linear-gradient(135deg, rgba(123, 63, 242, 0.2), rgba(255, 215, 0, 0.2));
+            border: 3px solid var(--accent-yellow);
+            border-radius: 30px;
+            padding: 3rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            animation: glow 3s infinite;
+        }
+
+        .badge {
+            position: absolute;
+            top: -15px;
+            right: 30px;
+            background: var(--danger-red);
+            color: var(--white);
+            padding: 0.5rem 1.5rem;
+            border-radius: 20px;
+            font-weight: bold;
+            animation: pulse 1s infinite;
+        }
+
+        .company-name {
+            font-size: 1.2rem;
+            color: var(--primary-light);
+            margin-bottom: 2rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .price-wrapper {
+            margin: 2rem 0;
+        }
+
+        .old-price {
+            font-size: 1.5rem;
+            color: var(--gray-light);
+            text-decoration: line-through;
+            opacity: 0.5;
+        }
+
+        .new-price {
+            font-size: 4rem;
+            color: var(--accent-yellow);
+            font-weight: bold;
+            margin: 1rem 0;
+            animation: pulse 2s infinite;
+        }
+
+        /* FAQ Section */
+        .faq-section {
+            padding: 5rem 2rem;
+            background: var(--dark-section);
+        }
+
+        .faq-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .faq-item {
+            margin-bottom: 1rem;
+            border: 1px solid var(--primary-purple);
+            border-radius: 15px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .faq-item:hover {
+            box-shadow: 0 10px 30px rgba(123, 63, 242, 0.3);
+        }
+
+        .faq-question {
+            padding: 1.5rem;
+            background: rgba(123, 63, 242, 0.1);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.2rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .faq-question:hover {
+            background: rgba(123, 63, 242, 0.2);
+        }
+
+        .faq-icon {
+            transition: transform 0.3s ease;
+            color: var(--accent-yellow);
+            font-size: 1.5rem;
+        }
+
+        .faq-item.active .faq-icon {
+            transform: rotate(180deg);
+        }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease;
+            padding: 0 1.5rem;
+        }
+
+        .faq-item.active .faq-answer {
+            max-height: 500px;
+            padding: 1.5rem;
+        }
+
+        /* Final CTA */
+        .final-cta {
+            padding: 5rem 2rem;
+            background: var(--gradient-hero);
+            background-size: 400% 400%;
+            animation: gradient-shift 15s ease infinite;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .final-cta h2 {
+            font-size: clamp(2rem, 5vw, 4rem);
+            margin-bottom: 2rem;
+            color: var(--white);
+        }
+
+        .final-cta p {
+            font-size: 1.5rem;
+            margin-bottom: 3rem;
+            color: var(--accent-yellow);
+        }
+
+        /* Avis Section Styles */
+        .avis-section {
+            padding: 5rem 2rem;
+            background: var(--dark-section);
+            min-height: 100vh;
+        }
+
+        .avis-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .avis-title {
+            font-size: clamp(2rem, 4vw, 3.5rem);
+            margin-bottom: 1rem;
+            background: var(--gradient-cta);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .avis-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            max-width: 1000px;
+            margin: 3rem auto;
+        }
+
+        .avis-stat-card {
+            background: linear-gradient(135deg, rgba(123, 63, 242, 0.1), rgba(255, 215, 0, 0.05));
+            border: 1px solid var(--primary-purple);
+            border-radius: 20px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .avis-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .avis-card {
+            background: rgba(123, 63, 242, 0.05);
+            border: 1px solid rgba(123, 63, 242, 0.3);
+            border-radius: 15px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .avis-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(123, 63, 242, 0.3);
+            border-color: var(--accent-yellow);
+        }
+
+        .avis-card.five-stars {
+            border-color: var(--success-green);
+            background: rgba(0, 208, 132, 0.05);
+        }
+
+        .avis-card.one-star {
+            border-color: var(--danger-red);
+            background: rgba(255, 51, 102, 0.05);
+        }
+
+        .avis-author {
+            font-weight: bold;
+            color: var(--primary-light);
+            margin-bottom: 0.5rem;
+        }
+
+        .avis-rating {
+            color: var(--accent-yellow);
+            margin-bottom: 1rem;
+        }
+
+        .avis-text {
+            color: var(--gray-light);
+            line-height: 1.6;
+            font-style: italic;
+        }
+
+        .avis-date {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.9rem;
+            margin-top: 1rem;
+        }
+
+        /* Charts */
+        .charts-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            max-width: 1400px;
+            margin: 3rem auto;
+        }
+
+        .chart-card {
+            background: linear-gradient(135deg, rgba(123, 63, 242, 0.1), rgba(255, 215, 0, 0.05));
+            border: 1px solid var(--primary-purple);
+            border-radius: 20px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .chart-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(123, 63, 242, 0.3);
+        }
+
+        .chart-title {
+            color: var(--accent-yellow);
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        /* Horizontal Bar Chart */
+        .horizontal-bars {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            padding: 1rem;
+        }
+
+        .bar-row {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .bar-label-horizontal {
+            color: var(--gray-light);
+            width: 100px;
+            font-size: 0.95rem;
+        }
+
+        .bar-container {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            height: 25px;
+            position: relative;
+        }
+
+        .bar-fill {
+            height: 100%;
+            border-radius: 5px;
+            position: relative;
+            transition: width 1s ease-out;
+        }
+
+        .bar-count {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--accent-yellow);
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        /* Pie Chart */
+        .pie-chart {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto;
+            position: relative;
+            border-radius: 50%;
+            background: conic-gradient(
+                var(--success-green) 0deg 338deg,
+                var(--danger-red) 338deg 360deg
+            );
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .pie-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100px;
+            height: 100px;
+            background: var(--dark-section);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .pie-percentage {
+            font-size: 2rem;
+            color: var(--accent-yellow);
+            font-weight: bold;
+        }
+
+        .pie-label {
+            font-size: 0.8rem;
+            color: var(--gray-light);
+        }
+
+        /* Keywords Cloud */
+        .keywords-cloud {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .keyword-tag {
+            background: linear-gradient(135deg, rgba(123, 63, 242, 0.2), rgba(255, 215, 0, 0.1));
+            border: 1px solid var(--primary-purple);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            color: var(--gray-light);
+            transition: all 0.3s ease;
+        }
+
+        .keyword-tag:hover {
+            background: var(--gradient-cta);
+            color: var(--dark-bg);
+            transform: scale(1.1);
+        }
+
+        .keyword-count {
+            color: var(--accent-yellow);
+            font-weight: bold;
+            margin-left: 0.5rem;
+        }
+
+        /* Concurrents Section */
+        .concurrents-section {
+            padding: 5rem 2rem;
+            background: var(--dark-bg);
+            min-height: 100vh;
+        }
+
+        .concurrents-table {
+            max-width: 1400px;
+            margin: 0 auto;
+            overflow-x: auto;
+        }
+
+        .table-wrapper {
+            background: rgba(123, 63, 242, 0.05);
+            border-radius: 20px;
+            padding: 2rem;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: var(--gradient-hero);
+            color: white;
+            padding: 1rem;
+            text-align: left;
+            font-weight: bold;
+            position: sticky;
+            top: 0;
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(123, 63, 242, 0.1);
+            color: var(--gray-light);
+        }
+
+        tr:hover {
+            background: rgba(123, 63, 242, 0.1);
+        }
+
+        .distance-badge {
+            background: var(--gradient-danger);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        .rating-badge {
+            background: var(--gradient-success);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        /* Quartier Section */
+        .quartier-tab-section {
+            padding: 5rem 2rem;
+            background: var(--dark-section);
+            min-height: 100vh;
+        }
+
+        .quartier-categories {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .category-card {
+            background: linear-gradient(135deg, rgba(0, 180, 216, 0.1), rgba(123, 63, 242, 0.1));
+            border: 1px solid var(--info-blue);
+            border-radius: 20px;
+            padding: 2rem;
+        }
+
+        .category-title {
+            color: var(--info-blue);
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .category-list {
+            list-style: none;
+        }
+
+        .category-item {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .category-item:last-child {
+            border-bottom: none;
+        }
+
+        .item-name {
+            color: var(--gray-light);
+        }
+
+        .item-distance {
+            color: var(--accent-yellow);
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 1.8rem;
+            }
+            
+            .hero-stats {
+                gap: 1.5rem;
+            }
+
+            .timeline-item {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .position-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .map-wrapper {
+                grid-template-columns: 1fr;
+            }
+
+            #map {
+                height: 300px;
+            }
+
+            #enhanced-map {
+                height: 500px;
+            }
+
+            .trends-grid,
+            .features-grid,
+            .solution-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .map-legend-custom {
+                top: 10px;
+                right: 10px;
+                padding: 10px;
+                font-size: 11px;
+            }
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-purple);
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-light);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav-container">
+        <div style="color: var(--accent-yellow); font-weight: bold; font-size: 1.2rem;">VOCALIZEN</div>
+        <div class="hamburger" id="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <div class="nav-tabs" id="navTabs">
+            <a href="#accueil" class="nav-tab active" data-tab="accueil">Accueil</a>
+            <a href="#avis" class="nav-tab" data-tab="avis">Avis Clients</a>
+            <a href="#concurrents" class="nav-tab" data-tab="concurrents">Concurrents</a>
+            <a href="#quartier" class="nav-tab" data-tab="quartier">Le Quartier</a>
+        </div>
+    </nav>
+
+    <!-- Tab Content: Accueil -->
+    <div id="accueil" class="tab-content active">
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="particles" id="particles"></div>
+            <div class="hero-content">
+                <div class="hero-badge">🚀 Solution Vocalizen - Leader de l'IA Vocale pour Barbershops</div>
+                <h1>Parisian Cutz entre dans l'ère de <span class="highlight-yellow">l'Intelligence Artificielle</span></h1>
+                <p class="subtitle">
+                    Votre salon <span class="highlight-green">4.9/5 sur Planity</span> avec <span class="highlight-yellow">192 avis excellents</span><br>
+                    mérite la technologie qui définit <span class="highlight-purple">les barbershops de 2025</span>
+                </p>
+                
+                <div class="hero-stats">
+                    <div class="hero-stat">
+                        <div class="hero-stat-number">192</div>
+                        <div class="hero-stat-label">Avis Planity</div>
+                    </div>
+                    <div class="hero-stat">
+                        <div class="hero-stat-number">4.9/5</div>
+                        <div class="hero-stat-label">Note Excellence</div>
+                    </div>
+                    <div class="hero-stat">
+                        <div class="hero-stat-number">12ème</div>
+                        <div class="hero-stat-label">Sur 60 Salons</div>
+                    </div>
+                    <div class="hero-stat">
+                        <div class="hero-stat-number">2025</div>
+                        <div class="hero-stat-label">L'Année de l'IA</div>
+                    </div>
+                </div>
+
+                <!-- Carte Interactive Améliorée avec Espace -->
+                <div style="margin-top: 4rem; margin-bottom: 6rem;">
+                    <h2 style="text-align: center; font-size: 2rem; color: var(--primary-light); margin-bottom: 2rem;">
+                        📍 Carte Interactive de la Concurrence
+                    </h2>
+                    <div id="enhanced-map">
+                        <div class="map-legend-custom">
+                            <div class="legend-title">Légende</div>
+                            <div class="legend-item">
+                                <span class="legend-icon" style="background: #FFD700; border: 2px solid #FFA000;"></span>
+                                <span>Parisian Cutz</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-icon" style="background: #FF0000;"></span>
+                                <span>Danger < 100m</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-icon" style="background: #FF6B35;"></span>
+                                <span>Concurrent 100-200m</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-icon" style="background: #00B4D8;"></span>
+                                <span>Station Métro</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-icon" style="background: #00D084;"></span>
+                                <span>Commerce</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <a href="#pricing" class="cta-button">Découvrir Vocalizen pour mon salon</a>
+            </div>
+        </section>
+
+        <!-- Story Section -->
+        <section class="story-section reveal">
+            <div class="story-content">
+                <div class="story-header">
+                    <h2 class="story-title">L'Histoire de Parisian Cutz : Excellence et Innovation</h2>
+                    <p>Du 15 Rue Brochant au futur du barbering parisien</p>
+                </div>
+
+                <div class="story-timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-icon">💈</div>
+                        <div class="timeline-content">
+                            <h3>Un Salon d'Exception dans le 17ème</h3>
+                            <p>
+                                Parisian Cutz s'est imposé comme <span class="highlight-purple">LA référence du quartier Brochant</span>. 
+                                Avec Morgan et Leta, vous avez créé bien plus qu'un salon : <span class="highlight-green">un lieu où l'art du barbering 
+                                rencontre l'excellence du service</span>. Vos clients ne s'y trompent pas : 
+                                <span class="highlight-yellow">93.9% d'avis 5 étoiles</span> parlent d'eux-mêmes.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-icon">📊</div>
+                        <div class="timeline-content">
+                            <h3>Une Réputation Digitale Impressionnante</h3>
+                            <p>
+                                Votre présence en ligne témoigne de votre succès : <span class="highlight-yellow">192 avis sur Planity</span> avec une note de 4.9/5, 
+                                <span class="highlight-green">115 avis Google</span> à 4.8/5. Les mots qui reviennent le plus ? 
+                                <span class="highlight-purple">"Recommandé" (36 fois)</span>, <span class="highlight-purple">"Top service" (22 fois)</span>, 
+                                <span class="highlight-purple">"Accueil parfait" (24 fois)</span>. Cette excellence mérite d'être accessible 24/7.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-icon">🎯</div>
+                        <div class="timeline-content">
+                            <h3>Le Paradoxe de votre Succès</h3>
+                            <p>
+                                Vous êtes <span class="highlight-yellow">12ème sur 60 salons</span>, avec une note supérieure de +0.39 points 
+                                à la moyenne du quartier. Mais <span class="highlight-red">59 concurrents</span> vous entourent, 
+                                dont LAKAUNI à seulement 47m avec ses 5/5. <span class="highlight-purple">Chaque appel manqué 
+                                est une opportunité qu'ils captent</span>. C'est là que Vocalizen intervient.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stats-comparison">
+                    <div class="stat-card">
+                        <div class="stat-number highlight-yellow">27€</div>
+                        <div class="stat-label">Coupe Classic</div>
+                        <div class="stat-sublabel">Votre service phare</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number highlight-green">42€</div>
+                        <div class="stat-label">Coupe + Barbe</div>
+                        <div class="stat-sublabel">L'expérience complète</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number highlight-purple">11h-20h</div>
+                        <div class="stat-label">Vos horaires</div>
+                        <div class="stat-sublabel">6 jours sur 7</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number highlight-red">68h</div>
+                        <div class="stat-label">Fermé/semaine</div>
+                        <div class="stat-sublabel">Où les clients appellent</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Trends Section -->
+        <section class="trends-section reveal">
+            <div class="trends-header">
+                <h2 class="trends-title">Les Tendances 2025 qui Transforment le Barbering</h2>
+                <p>Parisian Cutz est-il prêt pour la révolution en cours ?</p>
+            </div>
+
+            <div class="trends-grid">
+                <div class="trend-card">
+                    <div class="trend-number">1</div>
+                    <div class="trend-icon">🤖</div>
+                    <h3 class="trend-title">L'IA au Service du Client</h3>
+                    <p class="trend-description">
+                        <span class="highlight-yellow">La tendance #1 de 2025</span> : les barbershops adoptent massivement 
+                        <span class="highlight-green">l'Intelligence Artificielle</span> pour la gestion des réservations, 
+                        les consultations virtuelles et l'optimisation du planning. Les salons équipés voient 
+                        <span class="highlight-purple">+30% de réservations</span>.
+                    </p>
+                    <span class="trend-tag">Vocalizen répond à cette tendance</span>
+                </div>
+
+                <div class="trend-card">
+                    <div class="trend-number">2</div>
+                    <div class="trend-icon">🌱</div>
+                    <h3 class="trend-title">Éco-Responsabilité & Durabilité</h3>
+                    <p class="trend-description">
+                        Les clients de 2025 privilégient les salons <span class="highlight-green">éco-conscients</span>. 
+                        Produits biodégradables, réduction du papier (bye bye carnets de RDV !), 
+                        outils éco-énergétiques. <span class="highlight-purple">L'IA permet de digitaliser 
+                        sans papier</span>.
+                    </p>
+                    <span class="trend-tag">Zéro papier avec Vocalizen</span>
+                </div>
+
+                <div class="trend-card">
+                    <div class="trend-number">3</div>
+                    <div class="trend-icon">✨</div>
+                    <h3 class="trend-title">Hyper-Personnalisation</h3>
+                    <p class="trend-description">
+                        Fini le service standard ! Les barbershops leaders offrent une 
+                        <span class="highlight-yellow">expérience sur-mesure</span>. L'IA mémorise les préférences, 
+                        anticipe les besoins, suggère des services. <span class="highlight-green">Chaque client 
+                        se sent unique</span> et revient.
+                    </p>
+                    <span class="trend-tag">Mémoire client infinie</span>
+                </div>
+
+                <div class="trend-card">
+                    <div class="trend-number">4</div>
+                    <div class="trend-icon">📱</div>
+                    <h3 class="trend-title">Booking Digital 24/7</h3>
+                    <p class="trend-description">
+                        <span class="highlight-red">70% des réservations</span> se font désormais en dehors 
+                        des heures d'ouverture. Les salons sans système 24/7 perdent ces clients. 
+                        <span class="highlight-purple">L'IA vocale capture même ceux qui n'aiment pas les apps</span>.
+                    </p>
+                    <span class="trend-tag">Jamais fermé avec l'IA</span>
+                </div>
+
+                <div class="trend-card">
+                    <div class="trend-number">5</div>
+                    <div class="trend-icon">🎯</div>
+                    <h3 class="trend-title">Expérience Premium Amplifiée</h3>
+                    <p class="trend-description">
+                        Hot towel shave amélioré, soins visage intégrés, consultations personnalisées... 
+                        <span class="highlight-green">Les services premium explosent</span>. L'IA suggère 
+                        naturellement ces upsells : <span class="highlight-yellow">+25% de panier moyen</span>.
+                    </p>
+                    <span class="trend-tag">Upsell automatique</span>
+                </div>
+
+                <div class="trend-card">
+                    <div class="trend-number">6</div>
+                    <div class="trend-icon">🌍</div>
+                    <h3 class="trend-title">Clientèle Internationale</h3>
+                    <p class="trend-description">
+                        Le 17ème attire touristes et expats. <span class="highlight-purple">Les salons multilingues 
+                        dominent</span>. L'IA parle toutes les langues instantanément : 
+                        <span class="highlight-green">Français, Anglais, Arabe, Portugais...</span>
+                    </p>
+                    <span class="trend-tag">Polyglotte naturellement</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Position Section -->
+        <section class="position-section reveal">
+            <div class="position-content">
+                <div class="position-grid">
+                    <div class="position-text">
+                        <h2>Pourquoi Parisian Cutz + Vocalizen = <span class="highlight-yellow">Domination du 17ème</span></h2>
+                        <ul class="position-points">
+                            <li>Vous avez <span class="highlight-green">l'excellence du service</span> (4.9/5 sur 192 avis)</li>
+                            <li>Vous avez <span class="highlight-purple">l'équipe talentueuse</span> (Morgan & Leta reconnus)</li>
+                            <li>Vous avez <span class="highlight-yellow">l'emplacement stratégique</span> (Métro Brochant, flux constant)</li>
+                            <li>Il vous manque <span class="highlight-red">la disponibilité H24</span> que vos concurrents n'ont pas non plus... encore</li>
+                            <li>Vocalizen = <span class="highlight-green">L'avantage décisif</span> pour passer du top 20% au top 5%</li>
+                        </ul>
+                    </div>
+                    <div class="position-visual">
+                        <div class="stat-card" style="background: var(--gradient-success); border: none;">
+                            <h3 style="color: white; font-size: 1.8rem; margin-bottom: 2rem;">Le Calcul Simple</h3>
+                            <p style="color: white; font-size: 1.2rem; line-height: 2;">
+                                Planity capture <span style="font-weight: bold;">les digitaux</span><br>
+                                + <br>
+                                Vocalizen capture <span style="font-weight: bold;">les traditionnels</span><br>
+                                = <br>
+                                <span style="font-size: 1.5rem; font-weight: bold;">100% du marché</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Map Section -->
+        <section class="map-section reveal">
+            <div class="map-container">
+                <div class="map-header">
+                    <h2>Votre Territoire : <span class="highlight-yellow">59 Concurrents</span> qui Attendent vos Clients</h2>
+                    <p>Chaque point rouge est un salon qui répond quand vous ne pouvez pas</p>
+                </div>
+                
+                <div class="map-wrapper">
+                    <div class="map-insights">
+                        <div class="insight-item">
+                            <div class="insight-title">⚡ Zone Rouge : Danger Immédiat</div>
+                            <p><span class="highlight-red">LAKAUNI (47m)</span> : 5/5 parfait, 63 avis</p>
+                            <p><span class="highlight-red">Les Copains d'abord (64m)</span> : 4.7/5, 142 avis</p>
+                            <p style="margin-top: 1rem; font-style: italic;">
+                                Ces deux concurrents captent <span class="highlight-yellow">vos appels manqués</span> 
+                                en moins de 60 secondes de marche.
+                            </p>
+                        </div>
+                        
+                        <div class="insight-item">
+                            <div class="insight-title">📊 Réalité du Marché</div>
+                            <p>• Volume total : <span class="highlight-purple">8,203 avis</span> dans la zone</p>
+                            <p>• Vous : <span class="highlight-green">307 avis totaux</span> (Google + Planity)</p>
+                            <p>• Position : <span class="highlight-yellow">3.7% du marché</span></p>
+                            <p>• Potentiel : <span class="highlight-green">Énorme marge de progression</span></p>
+                        </div>
+
+                        <div class="insight-item">
+                            <div class="insight-title">🚇 Atout Majeur : L'Accessibilité</div>
+                            <p>• Métro Brochant : <span class="highlight-green">278m</span></p>
+                            <p>• <span class="highlight-purple">5 entrées de métro</span> < 200m</p>
+                            <p>• Flux piéton : <span class="highlight-yellow">Constant toute la journée</span></p>
+                            <p style="margin-top: 1rem;">
+                                = Des milliers de clients potentiels qui <span class="highlight-red">appellent en sortant du métro</span>
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div id="map"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section class="features-section reveal">
+            <h2 style="text-align: center; font-size: clamp(2rem, 4vw, 3rem); margin-bottom: 3rem; color: var(--primary-light);">
+                Les Super-Pouvoirs de <span class="highlight-yellow">Vocalizen</span> pour Parisian Cutz
+            </h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🎙️</div>
+                    <h3 class="feature-title">Voix 100% Naturelle</h3>
+                    <p class="feature-description">
+                        Personne ne sait que c'est une IA. <span class="highlight-green">Ton parisien authentique</span>, 
+                        elle connaît votre salon, vos services, vos prix. Elle dit même 
+                        <span class="highlight-purple">"Morgan est le spécialiste des dégradés"</span>.
+                    </p>
+                    <div class="feature-benefit">Confiance client maximale</div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3 class="feature-title">Réponse en 0.3 secondes</h3>
+                    <p class="feature-description">
+                        <span class="highlight-yellow">Première sonnerie = décrochage</span>. 
+                        Même à 23h un dimanche. Même le lundi quand vous êtes fermés. 
+                        <span class="highlight-green">Zéro appel perdu</span>.
+                    </p>
+                    <div class="feature-benefit">100% de disponibilité</div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🧠</div>
+                    <h3 class="feature-title">Mémoire Client Infinie</h3>
+                    <p class="feature-description">
+                        <span class="highlight-purple">"Ah M. Dubois ! Votre coupe habituelle avec Morgan ?"</span> 
+                        L'IA reconnaît vos réguliers, leurs préférences, leurs créneaux favoris. 
+                        <span class="highlight-green">Fidélisation automatique</span>.
+                    </p>
+                    <div class="feature-benefit">Clients VIP choyés</div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">💰</div>
+                    <h3 class="feature-title">Upsell Intelligent</h3>
+                    <p class="feature-description">
+                        <span class="highlight-yellow">"Voulez-vous ajouter le soin barbe à 20€ ?"</span> 
+                        Suggestions naturelles basées sur l'historique. 
+                        Résultat : <span class="highlight-green">+25% de panier moyen</span> sans être intrusif.
+                    </p>
+                    <div class="feature-benefit">CA boosté naturellement</div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🔔</div>
+                    <h3 class="feature-title">Zéro No-Show</h3>
+                    <p class="feature-description">
+                        SMS automatique la veille : <span class="highlight-purple">"Parisian Cutz vous attend demain 14h"</span>. 
+                        Si annulation, l'IA appelle immédiatement la liste d'attente. 
+                        <span class="highlight-green">Planning toujours plein</span>.
+                    </p>
+                    <div class="feature-benefit">-95% d'absences</div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🌍</div>
+                    <h3 class="feature-title">Polyglotte du 17ème</h3>
+                    <p class="feature-description">
+                        Détecte la langue et switch instantanément. 
+                        <span class="highlight-yellow">Français, English, العربية, Português...</span> 
+                        Parfait pour les touristes et la diversité du quartier.
+                    </p>
+                    <div class="feature-benefit">+30% clients internationaux</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Solution Section -->
+        <section class="solution-section reveal">
+            <div class="solution-header">
+                <h2 class="solution-title">L'Harmonie Parfaite : Planity + Vocalizen</h2>
+                <p style="text-align: center; font-size: 1.3rem; color: var(--gray-light); margin-bottom: 3rem;">
+                    Vos clients adorent Planity ? <span class="highlight-green">Parfait !</span> 
+                    Vocalizen complète votre écosystème digital
+                </p>
+            </div>
+
+            <div class="solution-grid">
+                <div class="solution-card">
+                    <div class="solution-icon">💻</div>
+                    <h3>Planity pour les Digitaux</h3>
+                    <p>
+                        Les millennials et Gen Z adorent booker en ligne. 
+                        <span class="highlight-yellow">192 avis prouvent votre succès</span> sur ce canal. 
+                        Continuez à briller avec votre 4.9/5 !
+                    </p>
+                </div>
+
+                <div class="solution-card">
+                    <div class="solution-icon">📞</div>
+                    <h3>Vocalizen pour les Traditionnels</h3>
+                    <p>
+                        <span class="highlight-purple">40% des clients préfèrent encore appeler</span>. 
+                        Les 40+, les pressés, ceux qui veulent parler à "quelqu'un". 
+                        L'IA leur offre cette expérience humaine.
+                    </p>
+                </div>
+
+                <div class="solution-card">
+                    <div class="solution-icon">🔄</div>
+                    <h3>Synchronisation Parfaite</h3>
+                    <p>
+                        Vocalizen <span class="highlight-green">s'intègre avec Planity</span>. 
+                        Un agenda unique, deux canaux d'entrée. 
+                        L'IA voit les disponibilités en temps réel et réserve directement.
+                    </p>
+                </div>
+
+                <div class="solution-card">
+                    <div class="solution-icon">🌙</div>
+                    <h3>La Nuit, c'est Vocalizen</h3>
+                    <p>
+                        Après 20h, Planity reste ouvert mais <span class="highlight-yellow">qui répond aux questions ?</span> 
+                        "Puis-je venir avec mon fils ?", "Faites-vous les permanentes ?". 
+                        L'IA répond, rassure, convertit.
+                    </p>
+                </div>
+
+                <div class="solution-card">
+                    <div class="solution-icon">🎯</div>
+                    <h3>Double Impact Commercial</h3>
+                    <p>
+                        Online : <span class="highlight-green">Planity domine</span><br>
+                        Vocal : <span class="highlight-purple">Vocalizen excelle</span><br>
+                        = <span class="highlight-yellow">100% du marché couvert</span>
+                    </p>
+                </div>
+
+                <div class="solution-card">
+                    <div class="solution-icon">📊</div>
+                    <h3>Analytics Unifiés</h3>
+                    <p>
+                        Dashboard unique : voir d'où viennent vos clients 
+                        (Planity vs Appels), taux de conversion, 
+                        <span class="highlight-green">ROI par canal</span>. Pilotez avec des données.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Calculator Section -->
+        <section class="calculator-section reveal">
+            <div class="calculator">
+                <h2>Simulateur de Gains Potentiels</h2>
+                <p class="calculator-disclaimer">
+                    Ajustez les curseurs selon votre réalité. 
+                    Les résultats sont des estimations basées sur les moyennes du secteur.
+                </p>
+                
+                <div class="slider-group">
+                    <div class="slider-label">
+                        <span>📞 Appels manqués estimés par jour :</span>
+                        <span class="slider-value" id="missedValue">8</span>
+                    </div>
+                    <input type="range" id="missedSlider" min="3" max="25" value="8">
+                </div>
+
+                <div class="slider-group">
+                    <div class="slider-label">
+                        <span>💰 Votre ticket moyen (coupe = 27€) :</span>
+                        <span class="slider-value">€<span id="priceValue">35</span></span>
+                    </div>
+                    <input type="range" id="priceSlider" min="25" max="50" value="35">
+                </div>
+
+                <div class="slider-group">
+                    <div class="slider-label">
+                        <span>📅 Jours d'ouverture (actuellement 6) :</span>
+                        <span class="slider-value" id="daysValue">6</span>
+                    </div>
+                    <input type="range" id="daysSlider" min="5" max="7" value="6">
+                </div>
+
+                <div class="results">
+                    <div class="result-item">
+                        <div>Opportunités manquées actuellement :</div>
+                        <div class="loss-amount" id="lossAmount">Calcul...</div>
+                    </div>
+                    <div class="result-item">
+                        <div>Récupération potentielle avec Vocalizen :</div>
+                        <div class="gain-amount" id="gainAmount">Calcul...</div>
+                    </div>
+                    <div class="result-item">
+                        <div>Retour sur investissement :</div>
+                        <div class="roi-amount" id="roiAmount">Calcul...</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Pricing Section -->
+        <section class="pricing-section reveal" id="pricing">
+            <h2 style="text-align: center; font-size: clamp(2rem, 4vw, 3rem); margin-bottom: 3rem; color: var(--accent-yellow);">
+                L'Offre Exclusive Vocalizen pour Parisian Cutz
+            </h2>
+            <div class="pricing-card">
+                <div class="badge">EARLY ADOPTER</div>
+                <div class="company-name">VOCALIZEN AI</div>
+                
+                <div class="price-wrapper">
+                    <div class="old-price">Tarif normal : 99€/mois</div>
+                    <div class="new-price">49€</div>
+                    <div style="color: var(--gray-light); font-size: 1.2rem;">/mois pour les pionniers</div>
+                </div>
+                
+                <div style="margin: 2rem 0; padding: 1.5rem; background: rgba(0, 208, 132, 0.1); border-radius: 15px;">
+                    <p style="font-size: 1.1rem; margin-bottom: 1rem;">
+                        ✅ <span class="highlight-green">Installation en 24h</span><br>
+                        ✅ <span class="highlight-green">Formation personnalisée</span><br>
+                        ✅ <span class="highlight-green">Support 7j/7</span><br>
+                        ✅ <span class="highlight-green">Sans engagement</span>
+                    </p>
+                </div>
+                
+                <a href="#" class="cta-button" style="width: 100%; margin-top: 2rem;">
+                    ACTIVER VOCALIZEN MAINTENANT
+                </a>
+                
+                <p style="margin-top: 1.5rem; font-size: 0.9rem; opacity: 0.7;">
+                    🔒 Données sécurisées • ⚡ ROI dès la première semaine • 🏆 Technologie 2025
+                </p>
+            </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section class="faq-section reveal">
+            <h2 style="text-align: center; font-size: clamp(2rem, 4vw, 3rem); margin-bottom: 3rem; color: var(--primary-light);">
+                Questions sur Vocalizen pour Parisian Cutz
+            </h2>
+            <div class="faq-container">
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Vocalizen remplace-t-il Planity ?</span>
+                        <span class="faq-icon">⌄</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>
+                            <span class="highlight-green">Absolument pas !</span> Vocalizen COMPLÈTE Planity. 
+                            Vous gardez vos 192 avis 5 étoiles et votre système de booking online. 
+                            Vocalizen ajoute simplement <span class="highlight-yellow">le canal téléphonique H24</span> 
+                            pour ceux qui préfèrent appeler. Les deux systèmes se synchronisent : 
+                            un seul agenda, deux portes d'entrée. C'est le meilleur des deux mondes.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Comment l'IA connaît-elle mes services et prix ?</span>
+                        <span class="faq-icon">⌄</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>
+                            Configuration ultra simple en <span class="highlight-purple">15 minutes par téléphone</span>. 
+                            On entre tous vos services : Coupe 27€, Barbe 20€, Coupe+Barbe 42€, etc. 
+                            L'IA apprend vos horaires, connaît Morgan et Leta, 
+                            peut même dire <span class="highlight-green">"Morgan est là mardi-samedi, Leta mercredi-dimanche"</span>. 
+                            Mise à jour instantanée si vous changez vos prix.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Mes clients réguliers vont-ils être perturbés ?</span>
+                        <span class="faq-icon">⌄</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>
+                            Au contraire ! L'IA apprend rapidement vos habitués. 
+                            <span class="highlight-yellow">"Bonjour M. Martin, votre créneau du jeudi 18h avec Morgan ?"</span> 
+                            Ils adorent être reconnus, même à 22h. L'IA peut même leur dire 
+                            <span class="highlight-purple">"Ça fait 2 mois, on pensait à vous !"</span> 
+                            pour les réactiver. Vos réguliers deviennent encore plus fidèles.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Et si l'IA dit une bêtise ou ne comprend pas ?</span>
+                        <span class="faq-icon">⌄</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>
+                            L'IA Vocalizen est entraînée spécifiquement pour les barbershops. 
+                            Elle gère <span class="highlight-green">95% des demandes parfaitement</span>. 
+                            Pour les 5% complexes (groupe de 10 personnes, demande très spécifique), 
+                            elle peut soit <span class="highlight-purple">transférer l'appel vers vous</span>, 
+                            soit prendre un message détaillé. Vous gardez toujours le contrôle final.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Combien de temps pour voir des résultats ?</span>
+                        <span class="faq-icon">⌄</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>
+                            <span class="highlight-yellow">Dès le premier soir !</span> 
+                            Installation le matin, premiers appels traités le soir même. 
+                            En une semaine : planning du mardi plus rempli (grâce aux appels du lundi fermé), 
+                            moins de no-shows, premières réservations nocturnes. 
+                            En un mois : <span class="highlight-green">+20-30% de nouveaux clients</span> 
+                            qui n'auraient jamais pu vous joindre avant.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>LAKAUNI ou Les Copains d'abord l'ont déjà ?</span>
+                        <span class="faq-icon">⌄</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>
+                            Pas encore, mais <span class="highlight-red">l'adoption s'accélère dans le 17ème</span>. 
+                            Certains salons premium commencent à s'équiper. 
+                            C'est LE moment de prendre l'avantage. 
+                            <span class="highlight-green">Premier équipé = premier à capter tous les appels du soir</span>. 
+                            Dans 6 mois, ce sera la norme. Aujourd'hui, c'est votre différenciation.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>49€/mois, c'est rentable pour mon salon ?</span>
+                        <span class="faq-icon">⌄</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>
+                            Faisons le calcul : <span class="highlight-yellow">2 clients récupérés = 54€</span> (2x27€). 
+                            L'IA se rembourse en 2 coupes par mois ! 
+                            Tout le reste est du profit. Comparez avec une réceptionniste : 
+                            1800€/mois minimum, présente 35h/semaine. 
+                            Vocalizen : <span class="highlight-green">49€/mois, disponible 168h/semaine</span>. 
+                            C'est 36x moins cher pour 5x plus de disponibilité.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Je peux arrêter quand je veux ?</span>
+                        <span class="faq-icon">⌄</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>
+                            <span class="highlight-green">Sans engagement, sans piège</span>. 
+                            Vous testez, vous voyez les résultats. 
+                            Si vous n'êtes pas convaincu (ce qui n'arrive jamais 😉), 
+                            un simple email et c'est fini. Mais honnêtement, 
+                            une fois que vous verrez votre planning se remplir automatiquement 
+                            et vos no-shows disparaître, <span class="highlight-purple">vous ne pourrez plus vous en passer</span>.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Comment mes clients sauront que je suis joignable H24 ?</span>
+                        <span class="faq-icon">⌄</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>
+                            On vous fournit un <span class="highlight-yellow">kit de communication</span> : 
+                            stickers vitrine "Réservation 24/7", posts Instagram/Facebook prêts à publier, 
+                            mise à jour Google My Business. Vos clients actuels le découvrent naturellement 
+                            en appelant. Le bouche-à-oreille fait le reste : 
+                            <span class="highlight-green">"Tu sais qu'on peut réserver chez Parisian Cutz même à minuit ?"</span> 
+                            devient votre meilleure pub.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>L'IA peut-elle gérer mes services spéciaux (décoloration, curly...) ?</span>
+                        <span class="faq-icon">⌄</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>
+                            <span class="highlight-purple">Tous vos services sont configurables</span> : 
+                            Décoloration 30-60€ selon longueur, Curly 30€, Permanente 50€, 
+                            même l'offre étudiante à 23€ ! L'IA connaît les durées 
+                            (30min pour une coupe, 1h pour coupe+soin visage), 
+                            peut expliquer chaque service, et <span class="highlight-green">suggère le bon créneau 
+                            selon la durée nécessaire</span>. Plus malin qu'une vraie réceptionniste !
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Final CTA -->
+        <section class="final-cta">
+            <h2>Parisian Cutz, êtes-vous prêt pour <span class="highlight-yellow">2025</span> ?</h2>
+            <p>Rejoignez les barbershops qui embrassent l'Intelligence Artificielle</p>
+            <a href="#" class="cta-button">
+                OUI, JE VEUX VOCALIZEN POUR MON SALON
+            </a>
+            <p style="margin-top: 2rem; font-size: 1rem; opacity: 0.8;">
+                🚀 Installation demain • 📞 Premiers appels traités demain soir • 💰 ROI en 7 jours
+            </p>
+        </section>
+    </div>
+
+    <!-- Tab Content: Avis -->
+    <div id="avis" class="tab-content">
+        <section class="avis-section">
+            <div class="avis-header">
+                <h1 class="avis-title">115 Avis Google Analysés en Profondeur</h1>
+                <p style="font-size: 1.3rem; color: var(--gray-light);">
+                    La voix de vos clients : <span class="highlight-green">93.9% d'excellence</span>
+                </p>
+            </div>
+
+            <!-- Graphiques et Statistiques -->
+            <div class="charts-container">
+                <div class="chart-card">
+                    <h3 class="chart-title">📊 Distribution des Notes</h3>
+                    <div class="pie-chart">
+                        <div class="pie-center">
+                            <div class="pie-percentage">93.9%</div>
+                            <div class="pie-label">5 étoiles</div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 1rem; text-align: center;">
+                        <p style="color: var(--success-green);">⭐⭐⭐⭐⭐ 108 avis (93.9%)</p>
+                        <p style="color: var(--danger-red);">⭐ 7 avis (6.1%)</p>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <h3 class="chart-title">🔑 Top Mots-Clés (100 derniers avis)</h3>
+                    <div class="horizontal-bars">
+                        <div class="bar-row">
+                            <span class="bar-label-horizontal">Recommande</span>
+                            <div class="bar-container">
+                                <div class="bar-fill" style="background: var(--gradient-success); width: 100%;">
+                                    <span class="bar-count">31x</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bar-row">
+                            <span class="bar-label-horizontal">Coupe</span>
+                            <div class="bar-container">
+                                <div class="bar-fill" style="background: var(--gradient-success); width: 100%;">
+                                    <span class="bar-count">31x</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bar-row">
+                            <span class="bar-label-horizontal">Accueil</span>
+                            <div class="bar-container">
+                                <div class="bar-fill" style="background: var(--gradient-info); width: 65%;">
+                                    <span class="bar-count">20x</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bar-row">
+                            <span class="bar-label-horizontal">Pro</span>
+                            <div class="bar-container">
+                                <div class="bar-fill" style="background: var(--gradient-info); width: 45%;">
+                                    <span class="bar-count">14x</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bar-row">
+                            <span class="bar-label-horizontal">Morgan</span>
+                            <div class="bar-container">
+                                <div class="bar-fill" style="background: linear-gradient(135deg, #7B3FF2, #9B6FFF); width: 35%;">
+                                    <span class="bar-count">11x</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bar-row">
+                            <span class="bar-label-horizontal">Leta</span>
+                            <div class="bar-container">
+                                <div class="bar-fill" style="background: linear-gradient(135deg, #7B3FF2, #9B6FFF); width: 35%;">
+                                    <span class="bar-count">11x</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <h3 class="chart-title">💬 Nuage de Mots-Clés</h3>
+                    <div class="keywords-cloud">
+                        <span class="keyword-tag" style="font-size: 1.4rem;">Recommande<span class="keyword-count">31</span></span>
+                        <span class="keyword-tag" style="font-size: 1.4rem;">Coupe<span class="keyword-count">31</span></span>
+                        <span class="keyword-tag" style="font-size: 1.2rem;">Accueil<span class="keyword-count">20</span></span>
+                        <span class="keyword-tag">Professionnel<span class="keyword-count">14</span></span>
+                        <span class="keyword-tag">Qualité<span class="keyword-count">14</span></span>
+                        <span class="keyword-tag">Service<span class="keyword-count">14</span></span>
+                        <span class="keyword-tag">Morgan<span class="keyword-count">11</span></span>
+                        <span class="keyword-tag">Leta<span class="keyword-count">11</span></span>
+                        <span class="keyword-tag">Barbe<span class="keyword-count">11</span></span>
+                        <span class="keyword-tag">Parfait<span class="keyword-count">9</span></span>
+                    </div>
+                </div>
+            </div>
+
+            <div style="max-width: 1200px; margin: 3rem auto; padding: 2rem; background: rgba(0, 208, 132, 0.1); border-radius: 20px; border: 2px solid var(--success-green);">
+                <h3 style="color: var(--success-green); margin-bottom: 1rem;">📊 Analyse des 100 Derniers Avis</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; text-align: center;">
+                    <div>
+                        <div style="font-size: 2.5rem; color: var(--accent-yellow); font-weight: bold;">93%</div>
+                        <div style="color: var(--gray-light);">Avis 5 étoiles</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 2.5rem; color: var(--success-green); font-weight: bold;">100%</div>
+                        <div style="color: var(--gray-light);">Sentiment positif</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 2.5rem; color: var(--primary-light); font-weight: bold;">31x</div>
+                        <div style="color: var(--gray-light);">"Recommande"</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 2.5rem; color: var(--info-blue); font-weight: bold;">22x</div>
+                        <div style="color: var(--gray-light);">Mentions équipe</div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 style="text-align: center; margin: 3rem 0; color: var(--primary-light);">Derniers Avis 5 Étoiles ⭐⭐⭐⭐⭐</h2>
+            <div class="avis-grid">
+                <div class="avis-card five-stars">
+                    <div class="avis-author">Eliott</div>
+                    <div class="avis-rating">⭐⭐⭐⭐⭐</div>
+                    <div class="avis-text">
+                        "Un service au top ! Équipe à l'écoute, gestes précis et un savoir-faire irréprochable. 
+                        Résultat : un travail de qualité. Je ne peux que vous recommander ce salon, 
+                        vous pouvez y aller les yeux fermés."
+                    </div>
+                    <div class="avis-date">Août 2025</div>
+                </div>
+
+                <div class="avis-card five-stars">
+                    <div class="avis-author">Rayane Benmekideche</div>
+                    <div class="avis-rating">⭐⭐⭐⭐⭐</div>
+                    <div class="avis-text">
+                        "Masterclass sur masterclass, aucunes déceptions à son effectif. Excellent salon."
+                    </div>
+                    <div class="avis-date">Août 2025</div>
+                </div>
+
+                <div class="avis-card five-stars">
+                    <div class="avis-author">Sofyan Mathurin</div>
+                    <div class="avis-rating">⭐⭐⭐⭐⭐</div>
+                    <div class="avis-text">
+                        "Service impeccable, coupe parfaite et ambiance conviviale. Je recommande à 100% !"
+                    </div>
+                    <div class="avis-date">Août 2025</div>
+                </div>
+
+                <div class="avis-card five-stars">
+                    <div class="avis-author">Jeremy Haggiage</div>
+                    <div class="avis-rating">⭐⭐⭐⭐⭐</div>
+                    <div class="avis-text">
+                        "Magnifique transformation de cheveux mi long à cheveux court. 
+                        Ils prennent le temps de vous écouter et vous coupe à la perfection de ce que vous demandez. 
+                        Je recommande fortement."
+                    </div>
+                    <div class="avis-date">Juillet 2025</div>
+                </div>
+
+                <div class="avis-card five-stars">
+                    <div class="avis-author">Client fidèle</div>
+                    <div class="avis-rating">⭐⭐⭐⭐⭐</div>
+                    <div class="avis-text">
+                        "Magnifique expérience, rien à redire comme d'habitude. 
+                        Top Barber Professionnel et très aimable. Je recommande. Merci encore!"
+                    </div>
+                    <div class="avis-date">Juillet 2025</div>
+                </div>
+
+                <div class="avis-card five-stars">
+                    <div class="avis-author">Client satisfait</div>
+                    <div class="avis-rating">⭐⭐⭐⭐⭐</div>
+                    <div class="avis-text">
+                        "Super barber! Merci Morgan! Prestation toujours au top."
+                    </div>
+                    <div class="avis-date">Août 2025</div>
+                </div>
+            </div>
+
+            <div style="max-width: 1000px; margin: 4rem auto; padding: 2rem; background: rgba(255, 51, 102, 0.1); border-radius: 20px; border: 2px solid var(--danger-red);">
+                <h3 style="color: var(--danger-red); margin-bottom: 1rem;">⚠️ Points d'Amélioration (7 avis 1 étoile)</h3>
+                <p style="color: var(--gray-light); line-height: 1.8;">
+                    Les rares avis négatifs mentionnent principalement : <span class="highlight-red">temps d'attente</span> 
+                    (clients sans RDV), <span class="highlight-red">difficultés à joindre le salon</span> par téléphone, 
+                    et quelques incompréhensions sur les créneaux.
+                </p>
+                <p style="margin-top: 1rem; color: var(--accent-yellow); font-weight: bold;">
+                    → Exactement ce que Vocalizen résout : réponse immédiate, gestion optimale des créneaux, rappels automatiques !
+                </p>
+            </div>
+        </section>
+    </div>
+
+    <!-- Tab Content: Concurrents -->
+    <div id="concurrents" class="tab-content">
+        <section class="concurrents-section">
+            <div class="avis-header">
+                <h1 class="avis-title">59 Concurrents Analysés</h1>
+                <p style="font-size: 1.3rem; color: var(--gray-light);">
+                    Position : <span class="highlight-yellow">12ème sur 60</span> • 
+                    Note : <span class="highlight-green">+0.39 vs moyenne</span> • 
+                    Risque : <span class="highlight-red">LAKAUNI à 47m</span>
+                </p>
+            </div>
+
+            <div class="concurrents-table">
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Position</th>
+                                <th>Nom du Salon</th>
+                                <th>Distance</th>
+                                <th>Note</th>
+                                <th>Avis</th>
+                                <th>Adresse</th>
+                                <th>Analyse</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="background: rgba(255, 215, 0, 0.1); font-weight: bold;">
+                                <td>VOUS</td>
+                                <td style="color: var(--accent-yellow);">Parisian Cutz</td>
+                                <td>-</td>
+                                <td><span class="rating-badge">4.8/5</span></td>
+                                <td>115</td>
+                                <td>15 Rue Brochant, 75017</td>
+                                <td>Excellence confirmée</td>
+                            </tr>
+                            <tr>
+                                <td>1</td>
+                                <td style="color: var(--danger-red);">LAKAUNI BARBERSHOP</td>
+                                <td><span class="distance-badge">47m</span></td>
+                                <td>5.0/5</td>
+                                <td>63</td>
+                                <td>110 Rue Truffaut, 75017</td>
+                                <td>⚠️ Danger immédiat</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td style="color: var(--warning-amber);">Les copains d'abord</td>
+                                <td><span class="distance-badge">64m</span></td>
+                                <td>4.7/5</td>
+                                <td>142</td>
+                                <td>95 Rue Nollet, 75017</td>
+                                <td>Fort volume d'avis</td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td>Barber shop</td>
+                                <td>112m</td>
+                                <td>4.4/5</td>
+                                <td>170</td>
+                                <td>15 Rue des Moines, 75017</td>
+                                <td>Leader en volume</td>
+                            </tr>
+                            <tr>
+                                <td>4</td>
+                                <td>VIP Coiffure</td>
+                                <td>116m</td>
+                                <td>4.3/5</td>
+                                <td>82</td>
+                                <td>148 Rue Cardinet, 75017</td>
+                                <td>Proche</td>
+                            </tr>
+                            <tr>
+                                <td>5</td>
+                                <td>Lynda Coiffure</td>
+                                <td>122m</td>
+                                <td>3.8/5</td>
+                                <td>255</td>
+                                <td>102 Rue Lemercier, 75017</td>
+                                <td>Volume énorme</td>
+                            </tr>
+                            <tr>
+                                <td>6</td>
+                                <td>ATELIER 97</td>
+                                <td>124m</td>
+                                <td>4.5/5</td>
+                                <td>87</td>
+                                <td>97 Rue Lemercier, 75017</td>
+                                <td>Bonne note</td>
+                            </tr>
+                            <tr>
+                                <td>7</td>
+                                <td style="color: var(--primary-light);">Miss Mag</td>
+                                <td>137m</td>
+                                <td>4.8/5</td>
+                                <td>526</td>
+                                <td>95 Rue Lemercier, 75017</td>
+                                <td>Leader absolu (526 avis!)</td>
+                            </tr>
+                            <tr>
+                                <td>8</td>
+                                <td>LOFT by Denis</td>
+                                <td>144m</td>
+                                <td>4.7/5</td>
+                                <td>82</td>
+                                <td>10 Rue des Moines, 75017</td>
+                                <td>Premium</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-top: 3rem;">
+                    <div style="background: rgba(255, 51, 102, 0.1); padding: 2rem; border-radius: 20px; border: 2px solid var(--danger-red);">
+                        <h3 style="color: var(--danger-red); margin-bottom: 1rem;">🚨 Zone de Danger Immédiat</h3>
+                        <p>3 concurrents dans un rayon de 100m captent vos appels manqués en moins d'1 minute de marche.</p>
+                        <ul style="list-style: none; margin-top: 1rem;">
+                            <li>• LAKAUNI : 47m (5.0/5)</li>
+                            <li>• Les copains d'abord : 64m (4.7/5)</li>
+                            <li>• Zone saturée en concurrence</li>
+                        </ul>
+                    </div>
+
+                    <div style="background: rgba(0, 208, 132, 0.1); padding: 2rem; border-radius: 20px; border: 2px solid var(--success-green);">
+                        <h3 style="color: var(--success-green); margin-bottom: 1rem;">✅ Votre Positionnement</h3>
+                        <p>12ème sur 60 avec une note supérieure à la moyenne (+0.39).</p>
+                        <ul style="list-style: none; margin-top: 1rem;">
+                            <li>• Note : 4.8/5 (excellent)</li>
+                            <li>• Top 20% du quartier</li>
+                            <li>• Potentiel de progression énorme</li>
+                        </ul>
+                    </div>
+
+                    <div style="background: rgba(123, 63, 242, 0.1); padding: 2rem; border-radius: 20px; border: 2px solid var(--primary-purple);">
+                        <h3 style="color: var(--primary-light); margin-bottom: 1rem;">📊 Analyse du Marché</h3>
+                        <p>8,203 avis totaux dans la zone = marché ultra-actif.</p>
+                        <ul style="list-style: none; margin-top: 1rem;">
+                            <li>• Moyenne : 141 avis/salon</li>
+                            <li>• Vous : 115 avis (sous la moyenne)</li>
+                            <li>• Leader : Miss Mag (526 avis!)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Tab Content: Quartier -->
+    <div id="quartier" class="tab-content">
+        <section class="quartier-tab-section">
+            <div class="avis-header">
+                <h1 class="avis-title">Le Quartier Brochant en Chiffres</h1>
+                <p style="font-size: 1.3rem; color: var(--gray-light);">
+                    Un écosystème <span class="highlight-green">ultra-dynamique</span> qui génère du flux permanent
+                </p>
+            </div>
+
+            <div class="quartier-categories">
+                <div class="category-card">
+                    <h3 class="category-title">
+                        <span>🚇</span> Transports (Métro/Bus)
+                    </h3>
+                    <ul class="category-list">
+                        <li class="category-item">
+                            <span class="item-name">Métro Brochant</span>
+                            <span class="item-distance">278m</span>
+                        </li>
+                        <li class="category-item">
+                            <span class="item-name">Boulevard Pereire</span>
+                            <span class="item-distance">288m</span>
+                        </li>
+                        <li class="category-item">
+                            <span class="item-name">Rue Cardinet</span>
+                            <span class="item-distance">267m</span>
+                        </li>
+                        <li class="category-item">
+                            <span class="item-name">Entrée Brochant</span>
+                            <span class="item-distance">262m</span>
+                        </li>
+                        <li class="category-item">
+                            <span class="item-name">Pont Cardinet</span>
+                            <span class="item-distance">170m</span>
+                        </li>
+                    </ul>
+                    <p style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1); color: var(--success-green);">
+                        = Flux piéton constant toute la journée
+                    </p>
+                </div>
+
+                <div class="category-card">
+                    <h3 class="category-title">
+                        <span>🍽️</span> Restaurants & Cafés
+                    </h3>
+                    <ul class="category-list">
+                        <li class="category-item">
+                            <span class="item-name">Kalypso</span>
+                            <span class="item-distance">18m</span>
+                        </li>
+                        <li class="category-item">
+                            <span class="item-name">Rêve De Gosse (bar)</span>
+                            <span class="item-distance">25m</span>
+                        </li>
+                        <li class="category-item">
+                            <span class="item-name">Caducée (café)</span>
+                            <span class="item-distance">26m</span>
+                        </li>
+                        <li class="category-item">
+                            <span class="item-name">Salicorne</span>
+                            <span class="item-distance">27m</span>
+                        </li>
+                        <li class="category-item">
+                            <span class="item-name">Gaston</span>
+                            <span class="item-distance">36m</span>
+                        </li>
+                        <li class="category-item">
+                            <span class="item-name">La Rotignole (bar)</span>
+                            <span class="item-distance">14m</span>
+                        </li>
+                    </ul>
+                    <p style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1); color: var(--accent-yellow);">
+                        27 restaurants + 7 cafés = clients potentiels H24
+                    </p>
+                </div>
+
+                <div class="category-card">
+                    <h3 class="category-title">
+                        <span>🛍️</span> Commerces de Proximité
+                    </h3>
+                    <ul class="category-list">
+                        <li class="category-item">
+                            <span class="item-name">G20 (supermarché)</span>
+                            <span class="item-distance">168m</span>
+                        </li>
+                        <li class="category-item">
+                            <span class="item-name">Copains (boulangerie)</span>
+                            <span class="item-distance">295m</span>
+                        </li>
+                        <li class="category-item">
+                            <span class="item-name">Nicolas (caviste)</span>
+                            <span class="item-distance">296m</span>
+                        </li>
+                        <li class="category-item">
+                            <span class="item-name">Formaticus (fromager)</span>
+                            <span class="item-distance">43m</span>
+                        </li>
+                        <li class="category-item">
+                            <span class="item-name">LR chocolatier</span>
+                            <span class="item-distance">36m</span>
+                        </li>
+                    </ul>
+                    <p style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1); color: var(--primary-light);">
+                        11 boulangeries + 9 supérettes dans la zone
+                    </p>
+                </div>
+
+                <div class="category-card">
+                    <h3 class="category-title">
+                        <span>👔</span> Mode & Services
+                    </h3>
+                    <ul class="category-list">
+                        <li class="category-item">
+                            <span class="item-name">36 boutiques mode</span>
+                            <span class="item-distance">Zone</span>
+                        </li>
+                        <li class="category-item">
+                            <span class="item-name">6 fleuristes</span>
+                            <span class="item-distance">Zone</span>
+                        </li>
+                        <li class="category-item">
+                            <span class="item-name">L'école Buissonnière</span>
+                            <span class="item-distance">164m</span>
+                        </li>
+                        <li class="category-item">
+                            <span class="item-name">Vélo électrique France</span>
+                            <span class="item-distance">35m</span>
+                        </li>
+                    </ul>
+                    <p style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1); color: var(--info-blue);">
+                        Clientèle CSP+ importante
+                    </p>
+                </div>
+            </div>
+
+            <div style="max-width: 1200px; margin: 4rem auto; padding: 3rem; background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(123, 63, 242, 0.1)); border-radius: 30px; text-align: center;">
+                <h2 style="color: var(--accent-yellow); margin-bottom: 2rem;">Le Paradoxe de votre Situation</h2>
+                <p style="font-size: 1.3rem; line-height: 2; color: var(--gray-light);">
+                    Vous êtes au cœur d'un quartier <span class="highlight-green">bouillonnant de vie</span> :<br>
+                    <span class="highlight-yellow">252 commerces</span> • 
+                    <span class="highlight-purple">5 entrées de métro < 200m</span> • 
+                    <span class="highlight-green">27 restaurants</span><br><br>
+                    
+                    = Des <span style="font-size: 1.5rem; color: var(--danger-red); font-weight: bold;">milliers de clients potentiels</span> 
+                    qui passent devant votre salon chaque jour.<br><br>
+                    
+                    Mais sans réponse téléphonique H24, vous laissez ce potentiel 
+                    <span class="highlight-red">s'échapper vers vos 59 concurrents</span>.<br><br>
+                    
+                    <span style="font-size: 1.5rem; color: var(--success-green); font-weight: bold;">
+                        Vocalizen = Capturer enfin ce flux énorme
+                    </span>
+                </p>
+            </div>
+        </section>
+    </div>
+
+    <!-- Leaflet JS pour la carte -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js" integrity="sha512-puJW3E/qXDqYp9IfhAI54BJEaWIfloJ7JWs7OeD5i6ruC9JZL1gERT1wjtwXFlh7CjE7ZJ+/vcRZRkIYIb6p4g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    
+    <script>
+        // Particle Animation
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            if (!particlesContainer) return;
+            
+            for (let i = 0; i < 40; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 6 + 's';
+                particle.style.animationDuration = (Math.random() * 4 + 4) + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // Reveal on Scroll
+        function revealOnScroll() {
+            const reveals = document.querySelectorAll('.reveal');
+            reveals.forEach(element => {
+                const windowHeight = window.innerHeight;
+                const elementTop = element.getBoundingClientRect().top;
+                const elementVisible = 150;
+                
+                if (elementTop < windowHeight - elementVisible) {
+                    element.classList.add('active');
+                }
+            });
+        }
+
+        // ROI Calculator
+        function updateCalculator() {
+            const missed = document.getElementById('missedSlider').value;
+            const price = document.getElementById('priceSlider').value;
+            const days = document.getElementById('daysSlider').value;
+            
+            document.getElementById('missedValue').textContent = missed;
+            document.getElementById('priceValue').textContent = price;
+            document.getElementById('daysValue').textContent = days;
+            
+            // Calculs réalistes
+            const conversionRate = 0.4; // 40% des appels manqués deviennent des RDV
+            const recoveryRate = 0.7; // L'IA récupère 70% de ces opportunités
+            
+            const monthlyMissed = missed * days * 4.3; // 4.3 semaines par mois
+            const potentialClients = monthlyMissed * conversionRate;
+            const monthlyLoss = potentialClients * price;
+            const withAI = monthlyLoss * recoveryRate;
+            const roi = Math.floor(withAI / 49);
+            
+            document.getElementById('lossAmount').textContent = `${Math.round(monthlyLoss).toLocaleString('fr-FR')}€/mois`;
+            document.getElementById('gainAmount').textContent = `+${Math.round(withAI).toLocaleString('fr-FR')}€/mois`;
+            document.getElementById('roiAmount').textContent = `x${roi}`;
+        }
+
+        // Initialize Map
+        function initMap() {
+            // Coordonnées de Parisian Cutz
+            const parisianCutz = [48.8888548, 2.3174462];
+            
+            // Créer la carte
+            const map = L.map('map').setView(parisianCutz, 16);
+            
+            // Ajouter le fond de carte sombre
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+            
+            // Marqueur principal - Parisian Cutz
+            const mainIcon = L.divIcon({
+                html: '<div style="background: linear-gradient(135deg, #FFD700, #FFA000); color: #0C0E1B; padding: 10px; border-radius: 50%; font-weight: bold; box-shadow: 0 6px 20px rgba(255, 215, 0, 0.6); border: 2px solid white;">PC</div>',
+                iconSize: [45, 45],
+                className: 'custom-div-icon'
+            });
+            
+            L.marker(parisianCutz, {icon: mainIcon})
+                .addTo(map)
+                .bindPopup('<b style="color: #FFD700;">Parisian Cutz</b><br>15 Rue Brochant<br>⭐ 4.9/5 (192 avis Planity)<br>⭐ 4.8/5 (115 avis Google)');
+            
+            // Ajouter les concurrents
+            const competitors = [
+                {name: 'LAKAUNI', coords: [48.8887829, 2.3168077], distance: '47m', rating: '5.0', reviews: 63},
+                {name: 'Les copains d\'abord', coords: [48.8886623, 2.3182761], distance: '64m', rating: '4.7', reviews: 142},
+                {name: 'Barber shop', coords: [48.8881828, 2.3185807], distance: '112m', rating: '4.4', reviews: 170},
+                {name: 'VIP Coiffure', coords: [48.8876062, 2.3143283], distance: '116m', rating: '4.3', reviews: 82},
+                {name: 'ATELIER 97', coords: [48.887, 2.318], distance: '124m', rating: '4.5', reviews: 87},
+                {name: 'Miss Mag', coords: [48.8875, 2.3165], distance: '137m', rating: '4.8', reviews: 526},
+            ];
+            
+            const competitorIcon = L.divIcon({
+                html: '<div style="background: #FF3366; color: white; padding: 6px; border-radius: 50%; font-size: 10px; font-weight: bold;">C</div>',
+                iconSize: [25, 25],
+                className: 'competitor-icon'
+            });
+            
+            competitors.forEach(comp => {
+                L.marker(comp.coords, {icon: competitorIcon})
+                    .addTo(map)
+                    .bindPopup(`<b>${comp.name}</b><br>Distance: ${comp.distance}<br>⭐ ${comp.rating}/5 (${comp.reviews} avis)`);
+            });
+            
+            // Ajouter un cercle de zone d'influence (200m)
+            L.circle(parisianCutz, {
+                color: '#FFD700',
+                fillColor: '#FFD700',
+                fillOpacity: 0.1,
+                radius: 200,
+                weight: 2
+            }).addTo(map);
+            
+            // Zone de danger (100m)
+            L.circle(parisianCutz, {
+                color: '#FF3366',
+                fillColor: '#FF3366',
+                fillOpacity: 0.15,
+                radius: 100,
+                weight: 2,
+                dashArray: '5, 10'
+            }).addTo(map);
+        }
+
+        // Initialize Enhanced Map
+        function initEnhancedMap() {
+            if (!document.getElementById('enhanced-map')) return;
+            
+            try {
+                // Coordonnées exactes de Parisian Cutz
+                const parisianCutz = [48.8888548, 2.3174462];
+                
+                // Créer la carte
+                const map = L.map('enhanced-map', {
+                    center: parisianCutz,
+                    zoom: 17,
+                    zoomControl: true,
+                    scrollWheelZoom: true
+                });
+                
+                // Fond de carte OpenStreetMap standard (clair)
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 19,
+                    attribution: '© OpenStreetMap contributors'
+                }).addTo(map);
+                
+                // CERCLES DE PÉRIMÈTRE
+                // 50m - Zone ultra-critique
+                L.circle(parisianCutz, {
+                    color: '#FF0000',
+                    fillColor: '#FF0000',
+                    fillOpacity: 0.15,
+                    radius: 50,
+                    weight: 3
+                }).addTo(map).bindPopup('Zone 50m - Ultra Critique');
+                
+                // 100m - Zone de danger
+                L.circle(parisianCutz, {
+                    color: '#FF6B35',
+                    fillColor: '#FF6B35',
+                    fillOpacity: 0.1,
+                    radius: 100,
+                    weight: 2,
+                    dashArray: '10, 5'
+                }).addTo(map).bindPopup('Zone 100m - Danger');
+                
+                // 200m - Zone d'influence
+                L.circle(parisianCutz, {
+                    color: '#FFA726',
+                    fillColor: '#FFA726',
+                    fillOpacity: 0.05,
+                    radius: 200,
+                    weight: 2,
+                    dashArray: '5, 5'
+                }).addTo(map).bindPopup('Zone 200m - Influence');
+                
+                // 300m - Zone de captation
+                L.circle(parisianCutz, {
+                    color: '#00D084',
+                    fillColor: '#00D084',
+                    fillOpacity: 0.02,
+                    radius: 300,
+                    weight: 1,
+                    dashArray: '3, 7'
+                }).addTo(map).bindPopup('Zone 300m - Captation');
+                
+                // MARQUEUR PRINCIPAL - PARISIAN CUTZ
+                const mainIcon = L.divIcon({
+                    html: `
+                        <div style="position: relative;">
+                            <div style="
+                                background: #FFD700;
+                                border: 3px solid #FFA000;
+                                border-radius: 50%;
+                                width: 40px;
+                                height: 40px;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                font-weight: bold;
+                                font-size: 16px;
+                                color: #000;
+                                box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+                                animation: pulse 2s infinite;
+                            ">PC</div>
+                            <div style="
+                                position: absolute;
+                                bottom: -8px;
+                                left: 50%;
+                                transform: translateX(-50%);
+                                width: 0;
+                                height: 0;
+                                border-left: 8px solid transparent;
+                                border-right: 8px solid transparent;
+                                border-top: 8px solid #FFA000;
+                            "></div>
+                        </div>
+                    `,
+                    iconSize: [40, 48],
+                    iconAnchor: [20, 48],
+                    popupAnchor: [0, -48],
+                    className: 'main-marker'
+                });
+                
+                const mainMarker = L.marker(parisianCutz, {icon: mainIcon})
+                    .addTo(map)
+                    .bindPopup(`
+                        <div style="min-width: 250px; font-family: Arial;">
+                            <h3 style="color: #FFD700; margin: 0 0 10px 0;">⭐ PARISIAN CUTZ ⭐</h3>
+                            <p style="margin: 5px 0;"><strong>📍 15 Rue Brochant, 75017</strong></p>
+                            <hr style="margin: 10px 0; border: 1px solid #eee;">
+                            <p style="margin: 5px 0;">⭐ Planity : 4.9/5 (192 avis)</p>
+                            <p style="margin: 5px 0;">⭐ Google : 4.8/5 (115 avis)</p>
+                            <hr style="margin: 10px 0; border: 1px solid #eee;">
+                            <p style="margin: 5px 0;">💈 Coupe : 27€</p>
+                            <p style="margin: 5px 0;">🧔 Barbe : 20€</p>
+                            <p style="margin: 5px 0;">✨ Coupe + Barbe : 42€</p>
+                        </div>
+                    `, {maxWidth: 300});
+                
+                // Ouvrir le popup automatiquement
+                mainMarker.openPopup();
+                
+                // CONCURRENTS - Tous les concurrents
+                const dangerCompetitors = [
+                    {name: 'LAKAUNI BARBERSHOP', coords: [48.8887829, 2.3168077], distance: '47m', rating: '5.0/5', reviews: 63, address: '110 Rue Truffaut'},
+                    {name: 'Les copains d\'abord', coords: [48.8886623, 2.3182761], distance: '64m', rating: '4.7/5', reviews: 142, address: '95 Rue Nollet'}
+                ];
+                
+                dangerCompetitors.forEach(comp => {
+                    const dangerIcon = L.divIcon({
+                        html: `<div style="background: #FF0000; color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; border: 2px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">!</div>`,
+                        iconSize: [30, 30],
+                        iconAnchor: [15, 15]
+                    });
+                    
+                    L.marker(comp.coords, {icon: dangerIcon})
+                        .addTo(map)
+                        .bindPopup(`
+                            <div style="font-family: Arial;">
+                                <h4 style="color: #FF0000; margin: 0 0 10px 0;">⚠️ CONCURRENT DANGEREUX</h4>
+                                <p style="margin: 5px 0;"><strong>${comp.name}</strong></p>
+                                <p style="margin: 5px 0;">📍 ${comp.address}</p>
+                                <p style="margin: 5px 0; color: #FF0000; font-weight: bold;">Distance : ${comp.distance}</p>
+                                <p style="margin: 5px 0;">⭐ ${comp.rating} (${comp.reviews} avis)</p>
+                            </div>
+                        `);
+                });
+                
+                // Concurrents moyens
+                const mediumCompetitors = [
+                    {name: 'Barber shop', coords: [48.8881828, 2.3185807], distance: '112m', rating: '4.4/5', reviews: 170},
+                    {name: 'VIP Coiffure', coords: [48.8876062, 2.3143283], distance: '116m', rating: '4.3/5', reviews: 82},
+                    {name: 'ATELIER 97', coords: [48.8870000, 2.3180000], distance: '124m', rating: '4.5/5', reviews: 87},
+                    {name: 'Miss Mag', coords: [48.8875000, 2.3165000], distance: '137m', rating: '4.8/5', reviews: 526}
+                ];
+                
+                mediumCompetitors.forEach(comp => {
+                    const mediumIcon = L.divIcon({
+                        html: `<div style="background: #FF6B35; color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; border: 1px solid white;">C</div>`,
+                        iconSize: [24, 24],
+                        iconAnchor: [12, 12]
+                    });
+                    
+                    L.marker(comp.coords, {icon: mediumIcon})
+                        .addTo(map)
+                        .bindPopup(`<h4>${comp.name}</h4><p>Distance : ${comp.distance}</p><p>⭐ ${comp.rating} (${comp.reviews} avis)</p>`);
+                });
+                
+                // STATIONS DE MÉTRO
+                const metroStations = [
+                    {name: 'Métro Brochant', coords: [48.8905757, 2.3202004], line: 'Ligne 13'},
+                    {name: 'Pont Cardinet', coords: [48.8895133, 2.3153423], line: 'Ligne 14'}
+                ];
+                
+                metroStations.forEach(station => {
+                    const metroIcon = L.divIcon({
+                        html: `<div style="background: #00B4D8; color: white; padding: 4px 8px; border-radius: 5px; font-weight: bold; font-size: 14px; border: 2px solid white;">M</div>`,
+                        iconSize: [30, 24],
+                        iconAnchor: [15, 12]
+                    });
+                    
+                    L.marker(station.coords, {icon: metroIcon})
+                        .addTo(map)
+                        .bindPopup(`<h4>🚇 ${station.name}</h4><p>${station.line}</p>`);
+                });
+                
+                // COMMERCES
+                const commerces = [
+                    {name: 'Kalypso Restaurant', coords: [48.8889000, 2.3172000], type: '🍴'},
+                    {name: 'G20 Supermarché', coords: [48.8893922, 2.3195945], type: '🛒'},
+                    {name: 'Rêve De Gosse Bar', coords: [48.8888500, 2.3173500], type: '🍺'}
+                ];
+                
+                commerces.forEach(commerce => {
+                    const commerceIcon = L.divIcon({
+                        html: `<div style="background: #00D084; color: white; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; border: 1px solid white;">${commerce.type}</div>`,
+                        iconSize: [20, 20],
+                        iconAnchor: [10, 10]
+                    });
+                    
+                    L.marker(commerce.coords, {icon: commerceIcon})
+                        .addTo(map)
+                        .bindPopup(commerce.name);
+                });
+                
+                // Ajouter l'échelle
+                L.control.scale({
+                    position: 'bottomleft',
+                    metric: true,
+                    imperial: false,
+                    maxWidth: 150
+                }).addTo(map);
+                
+                // Recentrer après chargement
+                setTimeout(() => {
+                    map.setView(parisianCutz, 17);
+                }, 500);
+                
+            } catch (error) {
+                console.error('Erreur lors de l\'initialisation de la carte:', error);
+                document.getElementById('enhanced-map').innerHTML = '<div style="padding: 2rem; text-align: center; color: #FFD700;">Erreur lors du chargement de la carte.</div>';
+            }
+        }
+
+        // FAQ Toggle
+        function setupFAQ() {
+            const faqItems = document.querySelectorAll('.faq-item');
+            faqItems.forEach(item => {
+                const question = item.querySelector('.faq-question');
+                question.addEventListener('click', () => {
+                    // Fermer les autres
+                    faqItems.forEach(otherItem => {
+                        if (otherItem !== item) {
+                            otherItem.classList.remove('active');
+                        }
+                    });
+                    // Toggle celui-ci
+                    item.classList.toggle('active');
+                });
+            });
+        }
+
+        // Initialize everything
+        document.addEventListener('DOMContentLoaded', () => {
+            createParticles();
+            
+            // Setup hamburger menu
+            const hamburger = document.getElementById('hamburger');
+            const navTabs = document.getElementById('navTabs');
+            
+            if (hamburger) {
+                hamburger.addEventListener('click', () => {
+                    hamburger.classList.toggle('active');
+                    navTabs.classList.toggle('active');
+                });
+            }
+            
+            // Setup tabs navigation
+            const tabs = document.querySelectorAll('.nav-tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    
+                    // Remove active from all tabs and contents
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tabContents.forEach(tc => tc.classList.remove('active'));
+                    
+                    // Add active to clicked tab
+                    tab.classList.add('active');
+                    
+                    // Show corresponding content
+                    const targetId = tab.getAttribute('data-tab');
+                    const targetContent = document.getElementById(targetId);
+                    if (targetContent) {
+                        targetContent.classList.add('active');
+                        
+                        // Close mobile menu
+                        if (window.innerWidth <= 768) {
+                            hamburger.classList.remove('active');
+                            navTabs.classList.remove('active');
+                        }
+                        
+                        // Reinitialize reveal animations for the new tab
+                        setTimeout(() => {
+                            revealOnScroll();
+                        }, 100);
+                    }
+                });
+            });
+            
+            // Setup scroll reveal
+            window.addEventListener('scroll', revealOnScroll);
+            revealOnScroll();
+            
+            // Setup calculator
+            const sliders = ['missedSlider', 'priceSlider', 'daysSlider'];
+            sliders.forEach(sliderId => {
+                const slider = document.getElementById(sliderId);
+                if (slider) {
+                    slider.addEventListener('input', updateCalculator);
+                }
+            });
+            updateCalculator();
+            
+            // Initialize maps
+            if (document.getElementById('map')) {
+                setTimeout(initMap, 500);
+            }
+            
+            // Initialize enhanced map on page load
+            setTimeout(() => {
+                if (document.getElementById('enhanced-map')) {
+                    initEnhancedMap();
+                }
+            }, 500);
+            
+            // Setup FAQ
+            setupFAQ();
+        });
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

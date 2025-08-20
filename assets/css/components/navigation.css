@@ -1,0 +1,207 @@
+/*
+ * Composant Navigation - Vocalizen Parisian Cutz
+ * Styles pour la barre de navigation et les onglets
+ */
+
+/* Conteneur principal de navigation */
+.nav-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: rgba(12, 14, 27, 0.95);
+    backdrop-filter: blur(10px);
+    z-index: 1000;
+    border-bottom: 1px solid rgba(123, 63, 242, 0.3);
+    transition: all var(--transition-normal);
+}
+
+/* Liste des onglets */
+.nav-tabs {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: var(--spacing-md) var(--spacing-xl);
+    gap: var(--spacing-xl);
+    max-width: 1400px;
+    margin: 0 auto;
+    flex-wrap: wrap;
+}
+
+/* Style des onglets individuels */
+.nav-tab {
+    color: var(--gray-light);
+    text-decoration: none;
+    padding: var(--spacing-sm) var(--spacing-lg);
+    border-radius: 25px;
+    transition: all var(--transition-normal);
+    font-weight: 500;
+    position: relative;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: var(--font-size-sm);
+    white-space: nowrap;
+}
+
+.nav-tab:hover {
+    color: var(--accent-yellow);
+    background: rgba(123, 63, 242, 0.2);
+    transform: translateY(-2px);
+}
+
+.nav-tab.active {
+    color: var(--dark-bg);
+    background: var(--gradient-cta);
+    font-weight: bold;
+    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+}
+
+/* Effet de soulignement actif */
+.nav-tab.active::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 6px;
+    height: 6px;
+    background: var(--accent-yellow);
+    border-radius: 50%;
+}
+
+/* Menu hamburger mobile */
+.hamburger {
+    display: none;
+    flex-direction: column;
+    cursor: pointer;
+    padding: var(--spacing-md);
+    gap: 4px;
+}
+
+.hamburger span {
+    width: 25px;
+    height: 3px;
+    background: var(--gray-light);
+    transition: all var(--transition-normal);
+    border-radius: 2px;
+}
+
+.hamburger.active span:first-child {
+    transform: rotate(45deg) translate(6px, 6px);
+}
+
+.hamburger.active span:nth-child(2) {
+    opacity: 0;
+}
+
+.hamburger.active span:last-child {
+    transform: rotate(-45deg) translate(6px, -6px);
+}
+
+/* Contenu des onglets */
+.tab-content {
+    display: none;
+    padding-top: 80px;
+    min-height: 100vh;
+}
+
+.tab-content.active {
+    display: block;
+    animation: fadeInUp 0.6s ease-out;
+}
+
+/* Logo dans la navigation */
+.nav-logo {
+    font-size: var(--font-size-xl);
+    font-weight: bold;
+    color: var(--accent-yellow);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.nav-logo:hover {
+    color: var(--primary-light);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .hamburger {
+        display: flex;
+    }
+    
+    .nav-tabs {
+        position: fixed;
+        top: 60px;
+        left: -100%;
+        width: 100%;
+        height: calc(100vh - 60px);
+        background: rgba(12, 14, 27, 0.98);
+        flex-direction: column;
+        justify-content: flex-start;
+        padding-top: var(--spacing-xl);
+        transition: left var(--transition-normal);
+        backdrop-filter: blur(15px);
+    }
+    
+    .nav-tabs.active {
+        left: 0;
+    }
+    
+    .nav-tab {
+        width: 80%;
+        text-align: center;
+        padding: var(--spacing-md);
+        font-size: var(--font-size-lg);
+        margin: var(--spacing-sm) 0;
+    }
+    
+    .nav-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 var(--spacing-md);
+        height: 60px;
+    }
+    
+    .tab-content {
+        padding-top: 60px;
+    }
+}
+
+@media (max-width: 480px) {
+    .nav-tabs {
+        gap: var(--spacing-md);
+        padding: var(--spacing-md);
+    }
+    
+    .nav-tab {
+        font-size: var(--font-size-xs);
+        padding: var(--spacing-xs) var(--spacing-sm);
+    }
+}
+
+/* Animation d'apparition des onglets */
+.nav-tab {
+    opacity: 0;
+    animation: slideInTop 0.5s ease forwards;
+}
+
+.nav-tab:nth-child(1) { animation-delay: 0.1s; }
+.nav-tab:nth-child(2) { animation-delay: 0.2s; }
+.nav-tab:nth-child(3) { animation-delay: 0.3s; }
+.nav-tab:nth-child(4) { animation-delay: 0.4s; }
+.nav-tab:nth-child(5) { animation-delay: 0.5s; }
+.nav-tab:nth-child(6) { animation-delay: 0.6s; }
+
+@keyframes slideInTop {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

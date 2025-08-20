@@ -1,0 +1,268 @@
+{
+  "1": {
+    "title": "Nouveau Client - Prise de RDV",
+    "duration": 27,
+    "type": "booking",
+    "outcome": "success",
+    "messages": [
+      {
+        "type": "bot",
+        "text": "Bonjour, Parisian Cutz, comment puis-je vous aider ?",
+        "time": 0.3
+      },
+      {
+        "type": "user", 
+        "text": "Oui bonjour, j'aimerais prendre RDV pour une coupe samedi",
+        "time": 2
+      },
+      {
+        "type": "bot",
+        "text": "Parfait ! Samedi nous avons de la disponibilité. Vous préférez matin ou après-midi ?",
+        "time": 3
+      },
+      {
+        "type": "user",
+        "text": "Plutôt le matin si possible",
+        "time": 5
+      },
+      {
+        "type": "bot",
+        "text": "J'ai 9h, 10h30 ou 11h30 samedi matin. Quelle heure vous arrange ?",
+        "time": 7
+      },
+      {
+        "type": "user",
+        "text": "10h30 c'est parfait",
+        "time": 9
+      },
+      {
+        "type": "bot",
+        "text": "Excellent ! Puis-je avoir votre nom ?",
+        "time": 11
+      },
+      {
+        "type": "user",
+        "text": "Martin Leroy",
+        "time": 13
+      },
+      {
+        "type": "bot",
+        "text": "Merci M. Leroy. Souhaitez-vous une coupe simple à 27€ ou ajouter la barbe pour 42€ au total ?",
+        "time": 15
+      },
+      {
+        "type": "user",
+        "text": "Juste la coupe",
+        "time": 17
+      },
+      {
+        "type": "bot",
+        "text": "Parfait ! Votre numéro pour la confirmation SMS ?",
+        "time": 19
+      },
+      {
+        "type": "user",
+        "text": "06 12 34 56 78",
+        "time": 21
+      },
+      {
+        "type": "bot",
+        "text": "C'est noté ! RDV samedi 10h30 pour une coupe avec Morgan. Vous recevez le SMS de confirmation. À samedi M. Leroy !",
+        "time": 23
+      },
+      {
+        "type": "user",
+        "text": "Merci, bonne journée",
+        "time": 25
+      },
+      {
+        "type": "bot",
+        "text": "Bonne journée à vous !",
+        "time": 27
+      }
+    ],
+    "actions": [
+      {
+        "time": 0,
+        "desc": "📞 Appel détecté → Décrochage"
+      },
+      {
+        "time": 0.3,
+        "desc": "🎤 Activation reconnaissance vocale"
+      },
+      {
+        "time": 2,
+        "desc": "🧠 NLP : \"RDV\" + \"coupe\" + \"samedi\""
+      },
+      {
+        "time": 3,
+        "desc": "📅 Check Planity : 12 créneaux samedi"
+      },
+      {
+        "time": 5,
+        "desc": "🔍 Filtrage : 5 créneaux matin only"
+      },
+      {
+        "time": 7,
+        "desc": "💡 Sélection : 3 meilleurs créneaux"
+      },
+      {
+        "time": 11,
+        "desc": "👤 Création profil : Martin Leroy"
+      },
+      {
+        "time": 15,
+        "desc": "💰 Calcul : Opportunité upsell détectée"
+      },
+      {
+        "time": 19,
+        "desc": "📱 Validation format : 06XXXXXXXX ✓"
+      },
+      {
+        "time": 21,
+        "desc": "✅ Création RDV dans Planity"
+      },
+      {
+        "time": 21.5,
+        "desc": "✅ Sync Google Calendar Morgan"
+      },
+      {
+        "time": 22,
+        "desc": "📨 SMS envoyé via Twilio"
+      },
+      {
+        "time": 23,
+        "desc": "📊 Analytics : +1 conversion"
+      },
+      {
+        "time": 25,
+        "desc": "💾 Conversation sauvegardée"
+      },
+      {
+        "time": 27,
+        "desc": "📈 Stats : 27s, conversion réussie"
+      }
+    ]
+  },
+  "2": {
+    "title": "Client Régulier - Modification RDV",
+    "duration": 20,
+    "type": "modification",
+    "outcome": "success",
+    "messages": [
+      {
+        "type": "bot",
+        "text": "Bonjour Parisian Cutz, comment puis-je vous aider ?",
+        "time": 0.3
+      },
+      {
+        "type": "user",
+        "text": "Bonjour, c'est David Chen, j'ai RDV demain 14h mais je dois reporter",
+        "time": 2
+      },
+      {
+        "type": "bot", 
+        "text": "Bonjour M. Chen ! Je vois votre RDV demain 14h avec Leta. Quand souhaitez-vous le reporter ?",
+        "time": 4
+      },
+      {
+        "type": "user",
+        "text": "Est-ce que jeudi même heure c'est possible ?",
+        "time": 6
+      },
+      {
+        "type": "bot",
+        "text": "Je vérifie... Jeudi 14h Leta est pris, mais j'ai 14h30 ou 15h30. Ou préférez-vous un autre jour ?",
+        "time": 8
+      },
+      {
+        "type": "user",
+        "text": "14h30 jeudi c'est bien",
+        "time": 10
+      },
+      {
+        "type": "bot",
+        "text": "Parfait ! Je déplace votre RDV coupe + barbe de demain à jeudi 14h30, toujours avec Leta",
+        "time": 12
+      },
+      {
+        "type": "user",
+        "text": "Super merci",
+        "time": 14
+      },
+      {
+        "type": "bot",
+        "text": "C'est modifié ! Vous recevez la confirmation SMS. Voulez-vous que j'active un rappel la veille ?",
+        "time": 16
+      },
+      {
+        "type": "user",
+        "text": "Oui s'il vous plaît",
+        "time": 18
+      },
+      {
+        "type": "bot",
+        "text": "C'est noté ! Rappel mercredi soir. À jeudi M. Chen !",
+        "time": 20
+      }
+    ],
+    "actions": [
+      {
+        "time": 0,
+        "desc": "📞 Appel entrant : 06 XX XX XX XX"
+      },
+      {
+        "time": 0.5,
+        "desc": "✨ Client reconnu : David Chen (12 visites)"
+      },
+      {
+        "time": 2,
+        "desc": "🔍 RDV trouvé : Demain 14h, Leta, C+B"
+      },
+      {
+        "time": 4,
+        "desc": "📅 Check disponibilité jeudi PM"
+      },
+      {
+        "time": 6,
+        "desc": "⚠️ Conflit : 14h occupé"
+      },
+      {
+        "time": 6.5,
+        "desc": "🔄 Alternatives : 14h30, 15h30, 16h30"
+      },
+      {
+        "time": 8,
+        "desc": "💡 Proposition 2 meilleurs créneaux"
+      },
+      {
+        "time": 12,
+        "desc": "🔄 Annulation RDV demain"
+      },
+      {
+        "time": 12.5,
+        "desc": "✅ Création nouveau RDV jeudi"
+      },
+      {
+        "time": 13,
+        "desc": "📱 SMS modification envoyé"
+      },
+      {
+        "time": 14,
+        "desc": "📧 Email modification envoyé"
+      },
+      {
+        "time": 16,
+        "desc": "⏰ Programmation rappel J-1"
+      },
+      {
+        "time": 18,
+        "desc": "📊 Stats : Client fidèle maintenu"
+      },
+      {
+        "time": 20,
+        "desc": "💾 Historique mis à jour"
+      }
+    ]
+  }
+}

@@ -1,0 +1,63 @@
+/*
+ * Variables CSS - Vocalizen Parisian Cutz
+ * Système de couleurs et gradients
+ */
+
+:root {
+    /* Palette Premium */
+    --primary-purple: #7B3FF2;
+    --primary-dark: #5F2DB8;
+    --primary-light: #9B6FFF;
+    --accent-yellow: #FFD700;
+    --accent-bright: #FFF59D;
+    --success-green: #00D084;
+    --danger-red: #FF3366;
+    --warning-amber: #FFA726;
+    --info-blue: #00B4D8;
+    
+    /* Couleurs de fond */
+    --dark-bg: #0C0E1B;
+    --dark-section: #161829;
+    --gray-light: #F7F8FC;
+    --gray-medium: #A0AEC0;
+    --white: #FFFFFF;
+    
+    /* Gradients */
+    --gradient-hero: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --gradient-cta: linear-gradient(45deg, #FFD700 0%, #FFA000 100%);
+    --gradient-danger: linear-gradient(135deg, #FF3366 0%, #FF6B35 100%);
+    --gradient-success: linear-gradient(135deg, #00D084 0%, #00BFA5 100%);
+    --gradient-info: linear-gradient(135deg, #00B4D8 0%, #0077B6 100%);
+    
+    /* Ombres et bordures */
+    --shadow-light: 0 2px 4px rgba(0, 0, 0, 0.1);
+    --shadow-medium: 0 4px 8px rgba(0, 0, 0, 0.15);
+    --shadow-heavy: 0 8px 24px rgba(0, 0, 0, 0.25);
+    --border-radius: 8px;
+    --border-radius-large: 15px;
+    
+    /* Typographie */
+    --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Inter', sans-serif;
+    --font-size-xs: 0.75rem;
+    --font-size-sm: 0.875rem;
+    --font-size-base: 1rem;
+    --font-size-lg: 1.125rem;
+    --font-size-xl: 1.25rem;
+    --font-size-2xl: 1.5rem;
+    --font-size-3xl: 1.875rem;
+    --font-size-4xl: 2.25rem;
+    
+    /* Espacement */
+    --spacing-xs: 0.25rem;
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 2rem;
+    --spacing-2xl: 3rem;
+    --spacing-3xl: 4rem;
+    
+    /* Transitions */
+    --transition-fast: 0.15s ease;
+    --transition-normal: 0.3s ease;
+    --transition-slow: 0.5s ease;
+}

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vocalizen pour Parisian Cutz - Agent IA Vocal qui Transforme votre Salon</title>
+    
+    <!-- Meta SEO -->
+    <meta name="description" content="Vocalizen transforme votre salon avec un agent IA vocal qui gère vos appels 24/7. Plus jamais d'appels perdus pour Parisian Cutz.">
+    <meta name="keywords" content="IA vocal, salon coiffure, réservation automatique, barbershop, Parisian Cutz">
+    <meta name="author" content="Vocalizen">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="Vocalizen pour Parisian Cutz">
+    <meta property="og:description" content="L'Agent IA Vocal qui Transforme votre Salon">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://vocalizen-parisian-cutz.com">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💇‍♂️</text></svg>">
+    
+    <!-- Leaflet CSS pour la carte -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" 
+          integrity="sha512-h9FcoyWjHcOcmEVkxOfTLnmZFWIH0iZhZT1H2TbOq55xssQGEJHEaIm+PgoUaZbRvQTNTluNOEfb1ZRy6D3BOw==" 
+          crossorigin="anonymous" 
+          referrerpolicy="no-referrer">
+    
+    <!-- CSS Principal -->
+    <link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav-container">
+        <div class="nav-logo">
+            <span>💇‍♂️</span>
+            Vocalizen
+        </div>
+        
+        <div class="nav-tabs" id="navTabs">
+            <a href="#accueil" class="nav-tab active" data-tab="accueil">Accueil</a>
+            <a href="#avis" class="nav-tab" data-tab="avis">Avis Clients</a>
+            <a href="#concurrents" class="nav-tab" data-tab="concurrents">Concurrents</a>
+            <a href="#quartier" class="nav-tab" data-tab="quartier">Le Quartier</a>
+            <a href="#comment-ca-marche" class="nav-tab" data-tab="comment-ca-marche">Comment ça marche</a>
+            <a href="#conversations-test" class="nav-tab" data-tab="conversations-test">Démos Live</a>
+        </div>
+        
+        <!-- Menu hamburger mobile -->
+        <button class="hamburger" aria-label="Menu mobile" aria-expanded="false">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+    </nav>
+
+    <!-- Conteneur principal de l'application -->
+    <div id="app">
+        <!-- Le contenu des onglets sera chargé dynamiquement -->
+        <div id="tab-loader" class="loading">
+            <div class="loading-spinner"></div>
+            <p>Chargement de Vocalizen...</p>
+        </div>
+    </div>
+
+    <!-- Scripts externes -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js" 
+            integrity="sha512-puJW3E/qXDqYp9IfhAI54BJEaWIfloJ7JWs7OeD5i6ruC9JZL1gERT1wjtwXFlh7CjE7ZJ+/vcRZRkIYIb6p4g==" 
+            crossorigin="anonymous" 
+            referrerpolicy="no-referrer" defer></script>
+    
+    <!-- Application principale -->
+    <script type="module" src="assets/js/app.js"></script>
+    
+    <!-- Chargement des sections HTML -->
+    <script type="module">
+        import('./assets/js/modules/content-loader.js').then(module => {
+            const { ContentLoader } = module;
+            window.contentLoader = new ContentLoader();
+        });
+    </script>
+
+</body>
+</html>

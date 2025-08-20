@@ -1,0 +1,16 @@
+MISSION: Restructurer index.html en architecture modulaire
+NE JAMAIS demander confirmation. Tout faire automatiquement.
+
+CRÉER CETTE STRUCTURE:
+/assets/css/ - Tous les styles
+/assets/js/ - Tout le JavaScript  
+/components/ - Sections HTML
+
+ÉTAPES:
+1. Backup index.html
+2. Extraire CSS dans assets/css/main.css
+3. Extraire JS dans assets/js/app.js
+4. Créer index.html minimal
+5. Tester que tout fonctionne
+
+EXÉCUTER SANS INTERRUPTION.

@@ -1,0 +1,9 @@
+﻿{
+  "auto_approve": true,
+  "batch_mode": true,
+  "max_iterations": 9999,
+  "stop_on_error": false,
+  "require_confirmation": false,
+  "default_yes": true,
+  "log_file": "operations.log"
+}
